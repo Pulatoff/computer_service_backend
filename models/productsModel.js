@@ -1,75 +1,73 @@
-const { UUID } = require("sequelize");
+const { UUID, DataTypes } = require("sequelize");
+const sequelize = require("../configs/db");
 
-const Products = (sequelize, DataTypes) => {
-  const Products = sequelize.define("products", {
-    id: {
-      type: DataTypes.UUID,
-      defaultValue: DataTypes.UUIDV4,
-      primaryKey: true,
+const Products = sequelize.define("products", {
+  id: {
+    type: DataTypes.UUID,
+    defaultValue: DataTypes.UUIDV4,
+    primaryKey: true,
+  },
+  name: {
+    type: DataTypes.STRING,
+    allowNull: false,
+    validate: {
+      min: 3,
+      max: 250,
     },
-    name: {
-      type: DataTypes.STRING,
-      allowNull: false,
-      validate: {
-        min: 3,
-        max: 250,
-      },
+  },
+  image_main: { type: DataTypes.STRING, allowNull: false },
+  saleId: {
+    type: DataTypes.UUID,
+    allowNull: true,
+    references: {
+      model: "sales",
+      key: "id",
     },
-    image_main: { type: DataTypes.STRING, allowNull: false },
-    saleId: {
-      type: DataTypes.UUID,
-      allowNull: true,
-      references: {
-        model: "sales",
-        key: "id",
-      },
-    }, //boshqa table
-    rewiesId: {
-      type: DataTypes.UUID,
-      allowNull: true,
-      references: {
-        model: "reviews",
-        key: "id",
-      },
-    }, //boshqa table
-    productDetailId: {
-      type: DataTypes.UUID,
-      allowNull: false,
-      references: {
-        model: "productDetails",
-        key: "id",
-      },
-    }, //boshqa table
-    categoryId: {
-      type: DataTypes.UUID,
-      allowNull: false,
-      references: {
-        model: "categories",
-        key: "id",
-      },
+  }, //boshqa table
+  rewiesId: {
+    type: DataTypes.UUID,
+    allowNull: true,
+    references: {
+      model: "reviews",
+      key: "id",
     },
-    categoryLittleId: {
-      type: DataTypes.UUID,
-      allowNull: false,
-      references: {
-        model: "categoryLittles",
-        key: "id",
-      },
+  }, //boshqa table
+  productDetailId: {
+    type: DataTypes.UUID,
+    allowNull: false,
+    references: {
+      model: "productDetails",
+      key: "id",
     },
-    views: {
-      type: DataTypes.INTEGER,
-      defaultValue: 1,
+  }, //boshqa table
+  categoryId: {
+    type: DataTypes.UUID,
+    allowNull: false,
+    references: {
+      model: "categories",
+      key: "id",
     },
-    brandId: {
-      type: DataTypes.UUID,
-      allowNull: false,
-      references: {
-        model: "brands",
-        key: "id",
-      },
+  },
+  categoryLittleId: {
+    type: DataTypes.UUID,
+    allowNull: false,
+    references: {
+      model: "categoryLittles",
+      key: "id",
     },
-  });
-  return Products;
-};
+  },
+  views: {
+    type: DataTypes.INTEGER,
+    defaultValue: 1,
+  },
+  brandId: {
+    type: DataTypes.UUID,
+    allowNull: false,
+    references: {
+      model: "brands",
+      key: "id",
+    },
+  },
+});
 
 module.exports = Products;

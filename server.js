@@ -1,4 +1,4 @@
-const dotenv = require("dotenv").config({ path: "./config.env" });
+const dotenv = require("dotenv").config({});
 const app = require("./middlewares/app");
 const cli = require("cli-color");
 
