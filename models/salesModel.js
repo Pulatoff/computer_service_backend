@@ -1,6 +1,7 @@
 const sequelize = require('../configs/db')
+const Product = require('./productsModel')
 
-const Sales = sequelize.define(
+const Sale = sequelize.define(
     'sales',
     {
         id: { type: DataTypes.UUID, defaultValue: DataTypes.UUIDV4, primaryKey: true },
@@ -8,11 +9,10 @@ const Sales = sequelize.define(
         start_date: { type: DataTypes.DATE, allowNull: false },
         end_date: { type: DataTypes.DATE, allowNull: false },
     },
-    {
-        timestamps: true,
-        createdAt: true,
-        updatedAt: false,
-    }
+    { timestamps: true, createdAt: true, updatedAt: false }
 )
 
-module.exports = Sales
+Product.hasOne(Sale)
+Sale.belongsTo(Product)
+
+module.exports = Sale
