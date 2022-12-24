@@ -6,11 +6,14 @@ const sequelize = new Sequelize(process.env.DB_NAME, process.env.DB_USER, proces
     port: process.env.NODE_ENV === 'production' ? 25060 : 5432,
     logging: false,
     ssl: true,
-    dialectOptions: {
-        ssl: {
-            rejectUnauthorized: false,
-        },
-    },
+    dialectOptions:
+        process.env.NODE_ENV === 'production'
+            ? {
+                  ssl: {
+                      rejectUnauthorized: false,
+                  },
+              }
+            : undefined,
 })
 
 module.exports = sequelize
