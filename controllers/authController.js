@@ -1,13 +1,27 @@
 const jwt = require('jsonwebtoken')
-const crypto = require('crypto')
 const bcrypt = require('bcryptjs')
-const validator = require('validator')
-const JwtSecret = process.env.JWT_SECRET
 // models
 const User = require('../models/userModel')
 // utils
 const AppError = require('../utility/appError')
 const catchAsync = require('../utility/catchAsync')
+const response = require('../utility/response')
+
+const createToken = ({ id }) => {
+    jwt.sign({ id }, process.env.JWT_SECRET, {
+        expiresIn: process.env.JWT_EXPIRES_IN,
+    })
+}
+
+const resUserType = (user) => {
+    return {
+        id: user.id,
+        email: user.email,
+        role: user.role,
+        username: user.username,
+        createdAt: user.createdAt,
+    }
+}
 
 exports.signUp = catchAsync(async (req, res, next) => {
     const { username, email, password, passwordConfirm } = req.body
@@ -21,41 +35,32 @@ exports.signUp = catchAsync(async (req, res, next) => {
 
     const user = await User.create({ username, email, password })
 
-    const id = user.id
-
-    const token = jwt.sign({ id }, JwtSecret, {
-        expiresIn: process.env.JWT_EXPIRES_IN,
-    })
-
-    res.status(200).json({
-        token: token,
-    })
+    const token = createToken(user)
+    response(res, { user: resUserType(user) }, 201, 'you successfully sign up')
 })
 
 exports.login = catchAsync(async (req, res, next) => {
     const { email, password } = req.body
+
     if (!email || !password) {
         return next(new AppError('Please provide email and password', 400))
     }
-    const user = await User.findOne({
-        where: { email },
-        attributes: ['id', 'email', 'password', 'username', 'role'],
-    })
+
+    const user = await User.findOne({ where: { email } })
+
     if (!user) {
         return next(new AppError('User not found', 404))
     }
+
     const shart = await bcrypt.compare(password, user.password)
 
     if (!shart) {
         return next(new AppError('Incorrect password', 401))
     }
-    const id = user.id
-    const token = jwt.sign({ id }, JwtSecret, {
-        expiresIn: process.env.JWT_EXPIRES_IN,
-    })
-    res.status(200).json({
-        token,
-    })
+
+    const token = createToken(user)
+
+    response(res, { user: resUserType(user) }, 201, 'you successfully sign in')
 })
 
 exports.protect = catchAsync(async (req, res, next) => {

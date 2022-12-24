@@ -6,7 +6,7 @@ const { DataTypes } = require('sequelize')
 const User = sequelize.define(
     'users',
     {
-        id: { type: DataTypes.UUID, defaultValue: DataTypes.UUIDV4, primaryKey: true },
+        id: { type: DataTypes.INTEGER, autoIncrement: true, primaryKey: true },
         username: {
             type: DataTypes.STRING,
             allowNull: false,
@@ -28,11 +28,7 @@ const User = sequelize.define(
                 },
             },
         },
-        role: {
-            type: DataTypes.ENUM,
-            defaultValue: 'user',
-            values: ['admin', 'user', 'moderator'],
-        },
+        role: { type: DataTypes.ENUM, defaultValue: 'user', values: ['admin', 'user', 'moderator'] },
         activ: { type: DataTypes.BOOLEAN, defaultValue: true },
     },
     { timestamps: true, createdAt: true, updatedAt: false }
