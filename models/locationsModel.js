@@ -1,7 +1,9 @@
 const sequelize = require('../configs/db')
 const { DataTypes } = require('sequelize')
+// models
+const User = require('./userModel')
 
-const Locations = sequelize.define(
+const Location = sequelize.define(
     'locations',
     {
         id: { type: DataTypes.UUID, defaultValue: DataTypes.UUIDV4, primaryKey: true },
@@ -14,4 +16,7 @@ const Locations = sequelize.define(
     { timestamps: true, createdAt: true, updatedAt: false }
 )
 
-module.exports = Locations
+User.hasMany(Location)
+Location.belongsTo(User)
+
+module.exports = Location

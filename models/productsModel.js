@@ -1,7 +1,9 @@
 const { DataTypes } = require('sequelize')
 const sequelize = require('../configs/db')
+const Brand = require('./brandsModel')
+const Category = require('./categoriesModel')
 
-const Products = sequelize.define(
+const Product = sequelize.define(
     'products',
     {
         id: { type: DataTypes.UUID, defaultValue: DataTypes.UUIDV4, primaryKey: true },
@@ -19,11 +21,13 @@ const Products = sequelize.define(
         views: { type: DataTypes.INTEGER, defaultValue: 1 },
         brandId: { type: DataTypes.UUID, allowNull: false, references: { model: 'brands', key: 'id' } },
     },
-    {
-        timestamps: true,
-        createdAt: true,
-        updatedAt: false,
-    }
+    { timestamps: true, createdAt: true, updatedAt: false }
 )
 
-module.exports = Products
+Category.hasMany(Product)
+Product.belongsTo(Category)
+
+Brand.hasMany(Product)
+Product.belongsTo(Brand)
+
+module.exports = Product

@@ -1,8 +1,10 @@
 const sequelize = require('../configs/db')
 const { DataTypes } = require('sequelize')
+// models
 const Product = require('./productsModel')
+const User = require('./userModel')
 
-const Baskets = sequelize.define(
+const Basket = sequelize.define(
     'baskets',
     {
         id: { type: DataTypes.UUID, defaultValue: DataTypes.UUIDV4, primaryKey: true },
@@ -18,6 +20,10 @@ const Baskets = sequelize.define(
     }
 )
 
-Product.hasMany(Baskets)
+Product.hasMany(Basket)
+Basket.belongsTo(Product)
 
-module.exports = Baskets
+User.hasMany(Basket)
+Basket.belongsTo(User)
+
+module.exports = Basket
