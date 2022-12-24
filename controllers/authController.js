@@ -11,15 +11,22 @@ const catchAsync = require('../utility/catchAsync')
 
 exports.signUp = catchAsync(async (req, res, next) => {
     const { username, email, password, passwordConfirm } = req.body
+    if (!username || !email || !password || !passwordConfirm) {
+        next(new AppError('You are need enter all fields', 404))
+    }
+
+    if (password !== passwordConfirm) {
+        next(new AppError('passwords is not same', 400))
+    }
 
     const user = await User.create({ username, email, password })
-    if (!user) {
-        next(new AppError('User not created', 400))
-    }
+
     const id = user.id
+
     const token = jwt.sign({ id }, JwtSecret, {
         expiresIn: process.env.JWT_EXPIRES_IN,
     })
+
     res.status(200).json({
         token: token,
     })
