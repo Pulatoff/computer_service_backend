@@ -1,19 +1,17 @@
-const likes = (sequelize, DataTypes) => {
-  const likes = sequelize.define("likes", {
-    id: {
-      type: DataTypes.UUID,
-      primaryKey: true,
-      defaultValue: DataTypes.UUIDV4,
-    },
-    productId: {
-      type: DataTypes.UUID,
-      refences: {
-        model: "products",
-        key: "id",
-      },
-    },
-  });
-  return likes;
-};
+const sequelize = require('../configs/db')
+const { DataTypes } = require('sequelize')
 
-module.exports = likes;
+const likes = sequelize.define(
+    'likes',
+    {
+        id: { type: DataTypes.UUID, primaryKey: true, defaultValue: DataTypes.UUIDV4 },
+        productId: { type: DataTypes.UUID },
+    },
+    {
+        timestamps: true,
+        createdAt: true,
+        updatedAt: false,
+    }
+)
+
+module.exports = likes
