@@ -16,6 +16,7 @@ const product = require('../routes/productRoute')
 const AppError = require('../utility/appError')
 
 app.use(morgan(process.env.NODE_ENV === 'development' ? 'dev' : 'common'))
+
 var corsOptions = {
     credentials: true,
     origin: function (origin, callback) {

@@ -7,8 +7,8 @@ const AppError = require('../utility/appError')
 const catchAsync = require('../utility/catchAsync')
 const response = require('../utility/response')
 
-const createToken = ({ id }) => {
-    jwt.sign({ id }, process.env.JWT_SECRET, {
+const createToken = async ({ id }) => {
+    return await jwt.sign({ id }, process.env.JWT_SECRET, {
         expiresIn: process.env.JWT_EXPIRES_IN,
     })
 }
@@ -44,7 +44,7 @@ exports.signUp = catchAsync(async (req, res, next) => {
 
     const user = await User.create({ username, email, password })
 
-    const token = createToken(user)
+    const token = await createToken(user)
     sendCookie(res, token)
     response(res, { user: resUserType(user) }, 201, 'you successfully sign up')
 })
@@ -68,7 +68,7 @@ exports.login = catchAsync(async (req, res, next) => {
         return next(new AppError('Incorrect password', 401))
     }
 
-    const token = createToken(user)
+    const token = await createToken(user)
     sendCookie(res, token)
     response(res, { user: resUserType(user) }, 201, 'you successfully sign in')
 })
