@@ -13,6 +13,15 @@ const createToken = ({ id }) => {
     })
 }
 
+const sendCookie = (res, token) => {
+    res.cookie('jwt', token, {
+        maxAge: 1000 * 60 * 60 * 24 * process.env.JWT_COOKIE_EXPIRES_IN,
+        httpOnly: true,
+        sameSite: 'none',
+        secure: true,
+    })
+}
+
 const resUserType = (user) => {
     return {
         id: user.id,
@@ -36,6 +45,7 @@ exports.signUp = catchAsync(async (req, res, next) => {
     const user = await User.create({ username, email, password })
 
     const token = createToken(user)
+    sendCookie(res, token)
     response(res, { user: resUserType(user) }, 201, 'you successfully sign up')
 })
 
@@ -59,7 +69,7 @@ exports.login = catchAsync(async (req, res, next) => {
     }
 
     const token = createToken(user)
-
+    sendCookie(res, token)
     response(res, { user: resUserType(user) }, 201, 'you successfully sign in')
 })
 
@@ -84,6 +94,10 @@ exports.protect = catchAsync(async (req, res, next) => {
         return new AppError('User not found', 404)
     }
     req.user = user
+})
+
+exports.userSelf = catchAsync(async (req, res, next) => {
+    const id = req.user.id
 })
 
 exports.logout = catchAsync(async (req, res, next) => {

@@ -1,11 +1,12 @@
 const express = require('express')
 const app = express()
 const morgan = require('morgan')
-const parser = require('cookie-parser')
 const errorHandler = require('../controllers/errorHandler')
+const { urlencoded } = require('express')
+const cors = require('cors')
+const cookieParser = require('cookie-parser')
 
 const locationRouter = require('../routes/locationRouter')
-const userRouter = require('../routes/userRouter')
 const review = require('../routes/reviewRouter')
 const categoryRouter = require('../routes/categoryRouter')
 const brandsModel = require('../routes/brandRoutes')
@@ -14,10 +15,25 @@ const details = require('../routes/detailsRoute')
 const product = require('../routes/productRoute')
 const AppError = require('../utility/appError')
 
-app.use(express.json())
-app.use(morgan('dev'))
-app.use(parser())
+app.use(morgan(process.env.NODE_ENV === 'development' ? 'dev' : 'common'))
+var corsOptions = {
+    credentials: true,
+    origin: function (origin, callback) {
+        callback(null, true)
+    },
+}
 
+app.use(cors(corsOptions))
+app.use(cookieParser())
+app.use(function (req, res, next) {
+    res.header('Access-Control-Allow-Credentials', true)
+    next()
+})
+
+// for fetching request body
+app.use(express.json({ limit: '1000kb' }))
+app.use(urlencoded({ limit: '1000kb' }))
+app.use(express.static('public'))
 // routes
 app.use('/api/v1/users', auth)
 app.use('/api/v1/product', product)
