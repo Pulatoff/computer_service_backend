@@ -19,13 +19,12 @@ app.use(morgan('dev'))
 app.use(parser())
 
 // routes
-app.use('/', auth)
+app.use('/api/v1/users', auth)
 app.use('/api/v1/product', product)
 app.use('/api/v1/details', details)
 app.use('/api/v1/brands', brandsModel)
 app.use('/api/v1/category', categoryRouter)
 app.use('/api/v1/locations', locationRouter)
-app.use('/api/v1/users', userRouter)
 app.use('/api/v1/reviews', review)
 
 app.all('*', (req, res, next) => {

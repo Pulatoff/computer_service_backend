@@ -4,8 +4,9 @@ module.exports = (err, req, res, next) => {
     err.message = err.message
     res.status(err.statusCode).json({
         status: err.status,
-        statusCode: err.statusCode,
+        isOk: false,
+        data: '',
         message: err.message,
-        infoError: err.stack,
+        infoError: process.env.NODE_ENV === 'development' ? err.slack : undefined,
     })
 }
