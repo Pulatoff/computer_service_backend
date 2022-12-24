@@ -5,8 +5,6 @@ const db = require('./configs/db')
 
 const PORT = process.env.PORT || 8000
 
-db.sync({
-    logging: false,
-})
+db.sync()
 
 app.listen(PORT, () => console.log(cli.blue(`Listening on PORT: ${PORT}`)))
