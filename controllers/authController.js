@@ -16,7 +16,7 @@ exports.signUp = catchAsync(async (req, res, next) => {
     }
 
     if (password !== passwordConfirm) {
-        next(new AppError('passwords is not same', 400))
+        next(new AppError('passwords is not the same', 400))
     }
 
     const user = await User.create({ username, email, password })
@@ -34,21 +34,18 @@ exports.signUp = catchAsync(async (req, res, next) => {
 
 exports.login = catchAsync(async (req, res, next) => {
     const { email, password } = req.body
-    if ((!email && !username && !phone) || !password) {
+    if (!email || !password) {
         return next(new AppError('Please provide email and password', 400))
     }
     const user = await User.findOne({
+        where: { email },
         attributes: ['id', 'email', 'password', 'username', 'role'],
-        where: {
-            [db.Op.or]: [{ email }, { username }, { phone }],
-        },
     })
     if (!user) {
         return next(new AppError('User not found', 404))
     }
     const shart = await bcrypt.compare(password, user.password)
-    if (user.role === 'admin') {
-    }
+
     if (!shart) {
         return next(new AppError('Incorrect password', 401))
     }
