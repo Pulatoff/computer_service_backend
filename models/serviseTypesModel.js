@@ -10,11 +10,7 @@ const ServiseTypes = sequelize.define(
         review_id: { type: DataTypes.STRING, allowNull: false }, // boshqa table
         worker_id: { type: DataTypes.STRING, allowNull: false }, // boshqa table
     },
-    {
-        timestamps: true,
-        createdAt: true,
-        updatedAt: false,
-    }
+    { timestamps: true, createdAt: true, updatedAt: false }
 )
 
 module.exports = ServiseTypes
