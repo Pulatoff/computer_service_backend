@@ -1,8 +1,10 @@
 const sequelize = require('../configs/db')
 const { DataTypes } = require('sequelize')
+// models
+const Product = require('./productsModel')
 
-const ProductDetails = sequelize.define(
-    'productDetails',
+const ProductDetail = sequelize.define(
+    'product_details',
     {
         id: { type: DataTypes.UUID, defaultValue: DataTypes.UUIDV4, primaryKey: true },
         name: { type: DataTypes.STRING, allowNull: false, validate: { notEmpty: true, min: 3, max: 250 } },
@@ -12,11 +14,10 @@ const ProductDetails = sequelize.define(
         condition: { type: DataTypes.STRING, allowNull: false },
         images: { type: DataTypes.ARRAY(DataTypes.STRING), allowNull: false },
     },
-    {
-        timestamps: true,
-        createdAt: true,
-        updatedAt: false,
-    }
+    { timestamps: true, createdAt: true, updatedAt: false }
 )
 
-module.exports = ProductDetails
+Product.hasOne(ProductDetail)
+ProductDetail.belongsTo(Product)
+
+module.exports = ProductDetail

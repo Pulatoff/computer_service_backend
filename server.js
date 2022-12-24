@@ -1,8 +1,12 @@
-const dotenv = require("dotenv").config({});
-const app = require("./middlewares/app");
-const cli = require("cli-color");
+require('dotenv').config({})
+const app = require('./middlewares/app')
+const cli = require('cli-color')
+const db = require('./configs/db')
 
-const PORT = process.env.PORT || 8000;
-require("./configs/db");
+const PORT = process.env.PORT || 8000
 
-app.listen(PORT, () => console.log(`Listening on PORT: ${PORT}`));
+db.sync({
+    logging: false,
+})
+
+app.listen(PORT, () => console.log(cli.blue(`Listening on PORT: ${PORT}`)))
