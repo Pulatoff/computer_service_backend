@@ -9,23 +9,27 @@ exports.getAllUsers = catchAsync(async (req, res) => {
     response(res, { data: users }, 200, `You are successfullt get ${users.length}`, users.length)
 })
 
-exports.createUser = catchAsync(async (req, res) => {
-    const user = await User.create(req.body)
-    res.status(200).json({ data: user })
+exports.createUser = catchAsync(async (req, res, next) => {
+    const { username, email, password, role } = req.body
+    const user = await User.create({ username, email, password, role })
+    response(res, { user }, 201, `You created new consumer by id: ${user.id}`)
 })
 
 exports.deleteUser = catchAsync(async (req, res) => {
-    await User.destroy({ where: { id: req.params.id } })
+    const id = req.params.id
+    await User.destroy({ where: { id } })
     res.status(200).json({ data: 'success' })
 })
 
 exports.getOneUser = catchAsync(async (req, res) => {
-    const user = await User.findOne({ where: { id: req.params.id }, attributes: { exclude: ['password'] } })
-    res.status(200).json({ user })
+    const id = req.params.id
+    const user = await User.findOne({ where: { id }, attributes: { exclude: ['password'] } })
+    response(res, { user }, 200, 'You successfully get user')
 })
 
 exports.updateUser = catchAsync(async (req, res) => {
-    const user = await User.findOne({ where: { id: req.params.id } })
+    const id = req.params.id
+    const user = await User.findOne({ where: { id } })
 
     user.first_name = req.body.first_name || user.first_name
     user.last_name = req.body.last_name || user.last_name
