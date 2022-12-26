@@ -30,7 +30,7 @@ exports.getOneUser = catchAsync(async (req, res, next) => {
 exports.updateUser = catchAsync(async (req, res, next) => {
     const id = req.params.id
     const { username, activ, role, email } = req.body
-    const user = await User.findOne({ where: { id } })
+    const user = await User.findOne({ where: { id }, attributes: { exclude: ['password'] } })
 
     user.username = username || user.username
     user.email = email || user.email
