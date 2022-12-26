@@ -20,8 +20,8 @@ exports.deleteUser = catchAsync(async (req, res) => {
 })
 
 exports.getOneUser = catchAsync(async (req, res) => {
-    const user = await User.findOne({ where: { id: req.params.id }, include: { model: Location } })
-    res.status(200).json({ data: user })
+    const user = await User.findOne({ where: { id: req.params.id }, attributes: { exclude: ['password'] } })
+    res.status(200).json({ user })
 })
 
 exports.updateUser = catchAsync(async (req, res) => {
