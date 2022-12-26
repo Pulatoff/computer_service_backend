@@ -74,25 +74,31 @@ exports.login = catchAsync(async (req, res, next) => {
 })
 
 exports.protect = catchAsync(async (req, res, next) => {
-    console.log(req.headers.authorization)
-    let token = req.headers.authorization
-    if (token.split(' ')[0] === 'Bearer' && token.split(' ')[1]) token = req.headers.authorization.split(' ')[1]
-    else return next(new AppError('Token not found', 401))
+    let token
+    if (req.cookies.jwt) {
+        token = req.cookies.jwt
+    } else if (req.headers.authorization.split(' ')[0] === 'Bearer' && req.headers.authorization.split(' ')[1]) {
+        token = req.headers.authorization.split(' ')[1]
+    } else {
+        return next(new AppError('Token not found', 401))
+    }
     const decoded = await jwt.verify(token, process.env.JWT_SECRET)
 
     const time = new Date().getTime()
+
     if (!decoded || !(decoded.exp <= time)) {
         return next(new AppError('Token is not valid', 401))
     }
+
     const user = await User.findOne({
         attributes: ['id', 'email', 'password', 'username', 'role'],
-        where: {
-            id: decoded.id,
-        },
+        where: { id: decoded.id },
     })
+
     if (!user) {
         return new AppError('User not found', 404)
     }
+
     req.user = user
 })
 
