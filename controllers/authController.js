@@ -77,7 +77,7 @@ exports.protect = catchAsync(async (req, res, next) => {
     let token
     if (req.cookies.jwt) {
         token = req.cookies.jwt
-    } else if (req.headers.authorization.split(' ')[0] === 'Bearer' && req.headers.authorization.split(' ')[1]) {
+    } else if (req?.headers?.authorization?.split(' ')[0] === 'Bearer' && req?.headers?.authorization) {
         token = req.headers.authorization.split(' ')[1]
     } else {
         return next(new AppError('Token not found', 401))
@@ -98,12 +98,14 @@ exports.protect = catchAsync(async (req, res, next) => {
     if (!user) {
         return new AppError('User not found', 404)
     }
-
     req.user = user
+    next()
 })
 
 exports.userSelf = catchAsync(async (req, res, next) => {
     const id = req.user.id
+    const user = await User.findByPk(id)
+    response(res, { user: resUserType(user) }, 200, 'You are refresh page')
 })
 
 exports.logout = catchAsync(async (req, res, next) => {
