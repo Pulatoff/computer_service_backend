@@ -1,15 +1,12 @@
-const db = require('../configs/db')
-
-const User = db.users
-
-const Location = db.locations
-const cli = require('cli-color')
+const User = require('../models/userModel')
+// utils
 const catchAsync = require('../utility/catchAsync')
+const response = require('../utility/response')
+//
 
-const getAll = catchAsync(async (req, res) => {
-    const users = await User.findAll()
-
-    res.status(200).json({ data: users })
+const getAllUsers = catchAsync(async (req, res) => {
+    const users = await User.findAll({ attributes: { exclude: ['password'] } })
+    response(res, { data: users }, 200, `You are successfullt get ${users.length}`, users.length)
 })
 
 const add = catchAsync(async (req, res) => {
@@ -43,7 +40,7 @@ const update = catchAsync(async (req, res) => {
 
 module.exports = {
     add,
-    getAll,
+    getAllUsers,
     delete1,
     getOne,
     update,

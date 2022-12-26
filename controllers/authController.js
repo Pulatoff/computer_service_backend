@@ -112,3 +112,17 @@ exports.logout = catchAsync(async (req, res, next) => {
     sendCookie(res, 'loggedOut')
     response(res, '', 206, 'You are successfully logout')
 })
+
+exports.role = (roles) => {
+    return async (req, res, next) => {
+        try {
+            // 1) User ni roleni olamiz databasedan, tekshiramiz
+            if (!roles.includes(req.user.role)) {
+                return next(new AppError("You don't access this process", 405))
+            }
+            next()
+        } catch (error) {
+            next(new AppError(error.message, 404))
+        }
+    }
+}
