@@ -13,7 +13,7 @@ router.route('/logout').get(auth.protect, auth.logout)
 router
     .route('/:id')
     .get(auth.protect, auth.role(['admin']), controller.getOneUser)
-    .patch(auth.protect, auth.role(['admin']), controller.updateUser)
+    .patch(auth.protect, controller.updateUser)
     .delete(auth.protect, auth.role(['admin']), controller.deleteUser)
 
 module.exports = router
