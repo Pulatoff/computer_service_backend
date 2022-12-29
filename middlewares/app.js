@@ -6,7 +6,6 @@ const { urlencoded } = require('express')
 const cors = require('cors')
 const cookieParser = require('cookie-parser')
 
-const locationRouter = require('../routes/locationRouter')
 const review = require('../routes/reviewRouter')
 const categoryRouter = require('../routes/categoryRouter')
 const brandsModel = require('../routes/brandRoutes')
@@ -41,7 +40,6 @@ app.use('/api/v1/product', product)
 app.use('/api/v1/details', details)
 app.use('/api/v1/brands', brandsModel)
 app.use('/api/v1/category', categoryRouter)
-app.use('/api/v1/locations', locationRouter)
 app.use('/api/v1/reviews', review)
 
 app.all('*', (req, res, next) => {

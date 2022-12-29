@@ -12,6 +12,8 @@ router.route('/signin').post(auth.login)
 router.route('/self').get(auth.protect, auth.userSelf)
 router.route('/logout').get(auth.protect, auth.logout)
 
+router.route('/location').post(auth.protect, auth.role(['user']), controller.addLocation)
+
 router
     .route('/:id')
     .get(auth.protect, auth.role(['admin']), controller.getOneUser)

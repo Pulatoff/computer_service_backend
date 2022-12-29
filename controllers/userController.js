@@ -7,7 +7,10 @@ const response = require('../utility/response')
 const AppError = require('../utility/appError')
 
 exports.getAllUsers = catchAsync(async (req, res, next) => {
-    const users = await User.findAll({ attributes: { exclude: ['password'] } })
+    const users = await User.findAll({
+        attributes: { exclude: ['password'] },
+        include: [{ model: Location, attributes: { exclude: ['userId'] } }],
+    })
     response(res, { data: users }, 200, `You are successfully get ${users.length}`, users.length)
 })
 
@@ -25,7 +28,11 @@ exports.deleteUser = catchAsync(async (req, res, next) => {
 
 exports.getOneUser = catchAsync(async (req, res, next) => {
     const id = req.params.id
-    const user = await User.findOne({ where: { id }, attributes: { exclude: ['password'] } })
+    const user = await User.findOne({
+        where: { id },
+        attributes: { exclude: ['password'] },
+        include: [{ model: Location, attributes: { exclude: ['userId'] } }],
+    })
     response(res, { user }, 200, 'You successfully get user')
 })
 
@@ -44,8 +51,23 @@ exports.updateUser = catchAsync(async (req, res, next) => {
 })
 
 exports.addLocation = catchAsync(async (req, res, next) => {
-    const { country, city, district, street, home } = req.body
-    if (!country || !city || !district || !street || !home) {
-        return next(new AppError('Tou need enter all fields', 404))
+    const { city, entrance_number, street, home_number, comment, section_number } = req.body
+    const userId = req.user.id
+    let resMessage = 'You add your location successfully'
+    const location = await Location.findOne({ where: { userId } })
+
+    if (location) {
+        location.city = city || location.city
+        location.entrance_number = entrance_number || location.entrance_number
+        location.comment = comment || location.comment
+        location.street = street || location.street
+        location.home_number = home_number || location.home_number
+        location.section_number = section_number || location.section_number
+        await location.save()
+        resMessage = 'You update location data successfully'
+    } else {
+        await Location.create({ city, entrance_number, street, home_number, comment, section_number, userId })
     }
+
+    response(res, '', 201, resMessage)
 })
