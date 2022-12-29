@@ -6,17 +6,18 @@ const User = require('./userModel')
 const Location = sequelize.define(
     'locations',
     {
-        id: { type: DataTypes.UUID, defaultValue: DataTypes.UUIDV4, primaryKey: true },
-        country: { type: DataTypes.STRING, allowNull: false },
+        id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
+        section_number: { type: DataTypes.STRING, allowNull: false },
         city: { type: DataTypes.STRING, allowNull: false },
-        district: { type: DataTypes.STRING, allowNull: false },
+        entrance_number: { type: DataTypes.INTEGER, allowNull: false },
         street: { type: DataTypes.STRING, allowNull: false },
-        home: { type: DataTypes.INTEGER, allowNull: false },
+        home_number: { type: DataTypes.INTEGER, allowNull: false },
+        comment: { type: DataTypes.TEXT, allowNull: true },
     },
     { timestamps: true, createdAt: true, updatedAt: false }
 )
 
-User.hasMany(Location)
+User.hasOne(Location)
 Location.belongsTo(User)
 
 module.exports = Location

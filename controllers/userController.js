@@ -1,8 +1,10 @@
 // models
 const User = require('../models/userModel')
+const Location = require('../models/locationsModel')
 // utils
 const catchAsync = require('../utility/catchAsync')
 const response = require('../utility/response')
+const AppError = require('../utility/appError')
 
 exports.getAllUsers = catchAsync(async (req, res, next) => {
     const users = await User.findAll({ attributes: { exclude: ['password'] } })
@@ -39,4 +41,11 @@ exports.updateUser = catchAsync(async (req, res, next) => {
     await user.save()
 
     response(res, { user }, 200, 'you successfully update user')
+})
+
+exports.addLocation = catchAsync(async (req, res, next) => {
+    const { country, city, district, street, home } = req.body
+    if (!country || !city || !district || !street || !home) {
+        return next(new AppError('Tou need enter all fields', 404))
+    }
 })
