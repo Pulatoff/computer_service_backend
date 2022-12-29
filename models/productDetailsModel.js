@@ -13,6 +13,7 @@ const ProductDetail = sequelize.define(
         colors: { type: DataTypes.ENUM, defaultValue: 'black', values: ['white', 'black', 'gray'] },
         condition: { type: DataTypes.STRING, allowNull: false },
         images: { type: DataTypes.ARRAY(DataTypes.STRING), allowNull: false },
+        specifications: { type: DataTypes.JSON, allowNull: true },
     },
     { timestamps: true, createdAt: true, updatedAt: false }
 )
