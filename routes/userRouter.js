@@ -17,7 +17,7 @@ router.route('/location').post(auth.protect, auth.role(['user']), controller.add
 router
     .route('/:id')
     .get(auth.protect, auth.role(['admin']), controller.getOneUser)
-    .patch(auth.protect, auth.role(['admin']), controller.updateUser)
+    .patch(auth.protect, auth.role(['user', 'admin']), controller.updateUser)
     .delete(auth.protect, auth.role(['admin']), controller.deleteUser)
 
 module.exports = router
