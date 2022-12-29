@@ -3,6 +3,7 @@ const Category = require('../models/categoriesModel')
 // utils
 const AppError = require('../utility/appError')
 const catchAsync = require('../utility/catchAsync')
+const response = require('../utility/response')
 
 const getAll = catchAsync(async (req, res) => {
     const categories = await Category.findAll({
@@ -19,20 +20,18 @@ const getAll = catchAsync(async (req, res) => {
     })
 })
 
-const add = catchAsync(async (req, res) => {
-    console.log(req.body)
-    const categories = await Category.create(req.body)
-    res.status(200).json({
-        data: categories,
-        status: 'succes',
-    })
+exports.addCategory = catchAsync(async (req, res, next) => {
+    const { name } = req.body
+    if (!name) {
+        next(new AppError('You need enter all fields'))
+    }
+    await Category.create({ name })
+    response(res, '', 201, `You create category by name: ${name}`)
 })
 
 const delete1 = catchAsync(async (req, res) => {
     await Category.destroy({ where: { id: req.params.id } })
-    res.status(200).json({
-        data: 'success',
-    })
+    res.status(200).json({ data: 'success' })
 })
 const getOne = catchAsync(async (req, res) => {
     const loc = await Category.findOne({
@@ -63,12 +62,4 @@ const update = async (req, res) => {
     res.status(200).json({
         data: newCategory,
     })
-}
-
-module.exports = {
-    add,
-    getAll,
-    delete1,
-    getOne,
-    update,
 }
