@@ -1,13 +1,23 @@
-const router = require("express").Router();
-const userController = require("../controllers/userController");
-
-router.route("/").post(userController.add).get(userController.getAll);
-
+const auth = require('../controllers/authController')
+const router = require('express').Router()
+const controller = require('../controllers/userController')
 
 router
-  .route("/:id")
-  .patch(userController.update)
-  .get(userController.getOne)
-  .delete(userController.delete1);
+    .route('/')
+    .get(auth.protect, auth.role(['admin']), controller.getAllUsers)
+    .post(auth.protect, auth.role(['admin']), controller.createUser)
 
-module.exports = router;
+router.route('/signup').post(auth.signUp)
+router.route('/signin').post(auth.login)
+router.route('/self').get(auth.protect, auth.userSelf)
+router.route('/logout').get(auth.protect, auth.logout)
+
+router.route('/location').post(auth.protect, auth.role(['user']), controller.addLocation)
+
+router
+    .route('/:id')
+    .get(auth.protect, auth.role(['admin']), controller.getOneUser)
+    .patch(auth.protect, auth.role(['admin']), controller.updateUser)
+    .delete(auth.protect, auth.role(['admin']), controller.deleteUser)
+
+module.exports = router
