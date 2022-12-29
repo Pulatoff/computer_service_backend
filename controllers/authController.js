@@ -2,6 +2,7 @@ const jwt = require('jsonwebtoken')
 const bcrypt = require('bcryptjs')
 // models
 const User = require('../models/userModel')
+const Location = require('../models/locationsModel')
 // utils
 const AppError = require('../utility/appError')
 const catchAsync = require('../utility/catchAsync')
@@ -28,6 +29,7 @@ const resUserType = (user) => {
         email: user.email,
         role: user.role,
         username: user.username,
+        location: user.location,
         createdAt: user.createdAt,
     }
 }
@@ -56,7 +58,10 @@ exports.login = catchAsync(async (req, res, next) => {
         return next(new AppError('Please provide email and password', 400))
     }
 
-    const user = await User.findOne({ where: { email } })
+    const user = await User.findOne({
+        where: { email },
+        include: [{ model: Location, attributes: { exclude: ['userId'] } }],
+    })
 
     if (!user) {
         return next(new AppError('User not found', 404))
@@ -104,7 +109,7 @@ exports.protect = catchAsync(async (req, res, next) => {
 
 exports.userSelf = catchAsync(async (req, res, next) => {
     const id = req.user.id
-    const user = await User.findByPk(id)
+    const user = await User.findByPk(id, { include: [{ model: Location, attributes: { exclude: ['userId'] } }] })
     response(res, { user: resUserType(user) }, 200, 'You are refresh page')
 })
 
