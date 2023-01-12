@@ -11,11 +11,13 @@ async function createAdmin() {
         await User.create({
             username: 'Admin',
             email: 'admin@root.com',
-            password: 'admin1234.',
+            password: 'Admin1234.',
             role: 'admin',
             activ: true,
         })
-    } catch (error) {}
+    } catch (error) {
+        console.log(error)
+    }
 }
 
 createAdmin()
