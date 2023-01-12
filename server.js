@@ -10,13 +10,15 @@ async function createAdmin() {
     try {
         await User.create({
             username: 'Admin',
-            email: 'admin@rooot.com',
+            email: 'admin@root.com',
             password: 'admin1234.',
             role: 'admin',
             activ: true,
         })
     } catch (error) {}
 }
+
+createAdmin()
 
 db.sync()
 
