@@ -5,7 +5,7 @@ const AppError = require('../utility/appError')
 const catchAsync = require('../utility/catchAsync')
 const response = require('../utility/response')
 
-exprots.getAllCategories = catchAsync(async (req, res) => {
+exports.getAllCategories = catchAsync(async (req, res) => {
     const categories = await Category.findAll({ limit: 10 })
 
     response(res, { categories }, 200, 'you are get categories')
