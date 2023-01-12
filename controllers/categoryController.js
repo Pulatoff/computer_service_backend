@@ -5,19 +5,10 @@ const AppError = require('../utility/appError')
 const catchAsync = require('../utility/catchAsync')
 const response = require('../utility/response')
 
-const getAll = catchAsync(async (req, res) => {
-    const categories = await Category.findAll({
-        include: [
-            {
-                model: db.categoryLittles,
-                as: 'categoryLittles',
-            },
-        ],
-    }) // required:true
-    res.status(200).json({
-        data: categories,
-        status: 'succes',
-    })
+exprots.getAllCategories = catchAsync(async (req, res) => {
+    const categories = await Category.findAll({ limit: 10 })
+
+    response(res, { categories }, 200, 'you are get categories')
 })
 
 exports.addCategory = catchAsync(async (req, res, next) => {
