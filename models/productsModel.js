@@ -6,7 +6,7 @@ const Category = require('./categoriesModel')
 const Product = sequelize.define(
     'products',
     {
-        id: { type: DataTypes.UUID, defaultValue: DataTypes.UUIDV4, primaryKey: true },
+        id: { type: DataTypes.INTEGER, autoIncrement: true, primaryKey: true },
         name: { type: DataTypes.STRING, allowNull: false, validate: { min: 3, max: 250 } },
         image_main: { type: DataTypes.STRING, allowNull: false },
         views: { type: DataTypes.INTEGER, defaultValue: 1 },

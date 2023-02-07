@@ -17,5 +17,16 @@ exports.addProduct = catchAsync(async (req, res, next) => {
         productId: product.id,
     })
 
-    response(res, '', 201, 'You are successfully created product')
+    response(res, '', 200, 'You are successfully created product')
+})
+
+exports.getAllProducts = catchAsync(async (req, res, next) => {
+    const products = await Product.findAll({ include: [{ model: ProductDetails }] })
+    response(res, { products }, 201, 'You are successfully get product')
+})
+
+exports.getOneProduct = catchAsync(async (req, res, next) => {
+    const id = req.params.id
+    const product = await Product.findByPk(id, { include: [{ model: ProductDetails }] })
+    response(res, { product }, 200, 'You are successfully get product')
 })

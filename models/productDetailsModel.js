@@ -6,7 +6,7 @@ const Product = require('./productsModel')
 const ProductDetail = sequelize.define(
     'product_details',
     {
-        id: { type: DataTypes.UUID, defaultValue: DataTypes.UUIDV4, primaryKey: true },
+        id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
         price: { type: DataTypes.BIGINT, allowNull: false },
         description: { type: DataTypes.TEXT, allowNull: false },
         colors: { type: DataTypes.ENUM, defaultValue: 'black', values: ['white', 'black', 'gray'] },
