@@ -1,19 +1,16 @@
 const { Sequelize } = require('sequelize')
 
-const sequelize = new Sequelize(process.env.DB_NAME, process.env.DB_USER, process.env.DB_PASSWORD, {
+const sequelize = new Sequelize('defaultdb', 'doadmin', 'AVNS_5Lgv70KVPpGWNPXgtKP', {
     dialect: 'postgres',
-    host: process.env.DB_HOST,
-    port: process.env.NODE_ENV === 'production' ? 25060 : 5432,
+    host: 'main-database-do-user-12917150-0.b.db.ondigitalocean.com',
+    port: 25060,
     logging: false,
     ssl: true,
-    dialectOptions:
-        process.env.NODE_ENV === 'production'
-            ? {
-                  ssl: {
-                      rejectUnauthorized: false,
-                  },
-              }
-            : undefined,
+    dialectOptions: {
+        ssl: {
+            rejectUnauthorized: false,
+        },
+    },
 })
 
 module.exports = sequelize
