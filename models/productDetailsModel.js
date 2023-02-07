@@ -7,7 +7,6 @@ const ProductDetail = sequelize.define(
     'product_details',
     {
         id: { type: DataTypes.UUID, defaultValue: DataTypes.UUIDV4, primaryKey: true },
-        name: { type: DataTypes.STRING, allowNull: false, validate: { notEmpty: true, min: 3, max: 250 } },
         price: { type: DataTypes.BIGINT, allowNull: false },
         description: { type: DataTypes.TEXT, allowNull: false },
         colors: { type: DataTypes.ENUM, defaultValue: 'black', values: ['white', 'black', 'gray'] },

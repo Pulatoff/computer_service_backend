@@ -36,7 +36,7 @@ app.use(urlencoded({ limit: '1000kb' }))
 app.use(express.static('public'))
 // routes
 app.use('/api/v1/users', auth)
-app.use('/api/v1/product', product)
+app.use('/api/v1/products', product)
 app.use('/api/v1/details', details)
 app.use('/api/v1/brands', brandsModel)
 app.use('/api/v1/categories', categoryRouter)
