@@ -21,7 +21,7 @@ exports.addProduct = catchAsync(async (req, res, next) => {
 
     const decodeImage = new Buffer(req.files[0].buffer, 'binary').toString('base64')
     const images_name = []
-    for (let i = 1; i < req.files.length - 1; i++) {
+    for (let i = 1; i < req.files.length; i++) {
         const decodedImage = new Buffer(req.files[i].buffer, 'binary').toString('base64')
         const image = await crypto.randomUUID().toString('binary')
         await Images.create({ image_name: image, image_binary: decodedImage })
