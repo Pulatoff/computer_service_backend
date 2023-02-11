@@ -11,7 +11,4 @@ const ProductImages = sequelize.define(
     { timestamps: true, createdAt: true }
 )
 
-ProductDetails.hasMany(ProductImages)
-ProductImages.belongsTo(ProductDetails)
-
 module.exports = ProductImages

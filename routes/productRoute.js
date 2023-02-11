@@ -2,7 +2,9 @@ const router = require('express').Router()
 const controller = require('../controllers/productController')
 
 router.route('/').post(controller.upload, controller.addProduct).get(controller.getAllProducts)
+
 router.route('/:id').get(controller.getOneProduct)
+router.route('/images/:uuid').get(controller.getImage)
 // Router.route("/:id").delete(delete1).get(getOne).patch(update);
 
 module.exports = router
