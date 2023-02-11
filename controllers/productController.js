@@ -19,11 +19,10 @@ exports.addProduct = catchAsync(async (req, res, next) => {
 
     const image_main = await crypto.randomUUID().toString('binary')
 
-    const decodeImage = new Buffer(req.file[0].buffer, 'binary').toString('base64')
+    const decodeImage = new Buffer(req.files[0].buffer, 'binary').toString('base64')
     const images_name = []
-
-    for (let i = 0; i < req.file.length - 1; i++) {
-        const decodedImage = new Buffer(req.file[i].buffer, 'binary').toString('base64')
+    for (let i = 1; i < req.files.length - 1; i++) {
+        const decodedImage = new Buffer(req.files[i].buffer, 'binary').toString('base64')
         const image = await crypto.randomUUID().toString('binary')
         await Images.create({ image_name: image, image_binary: decodedImage })
         images_name.push(image)
@@ -67,6 +66,7 @@ exports.getImage = catchAsync(async (req, res, next) => {
     const image = await Images.findOne({ where: { id: 1 } })
 
     const blobToImage = (blob) => {
+        console.log(blob)
         return new Promise((resolve) => {
             const url = URL.createObjectURL(blob)
             let img = new Image()
@@ -78,6 +78,6 @@ exports.getImage = catchAsync(async (req, res, next) => {
         })
     }
     const imageFile = blobToImage(image.image_binary)
-    // const myFile = new File([image.image_binary], 'image.jpeg')
-    res.end(myFile)
+
+    res.end(imageFile)
 })
