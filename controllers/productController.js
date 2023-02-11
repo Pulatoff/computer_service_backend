@@ -65,14 +65,19 @@ exports.getOneProduct = catchAsync(async (req, res, next) => {
 exports.getImage = catchAsync(async (req, res, next) => {
     const uuid = req.params.uuid
     const image = await Images.findOne({ where: { id: 1 } })
-    var buffer = new Buffer(image.image_binary, 'binary')
-    var bufferBase64 = buffer.toString('base64')
 
-    var img = Buffer.from(bufferBase64, 'base64')
-
-    res.writeHead(200, {
-        'Content-Type': 'image/jpeg',
-        'Content-Length': img.length,
-    })
-    res.end(img)
+    const blobToImage = (blob) => {
+        return new Promise((resolve) => {
+            const url = URL.createObjectURL(blob)
+            let img = new Image()
+            img.onload = () => {
+                URL.revokeObjectURL(url)
+                resolve(img)
+            }
+            img.src = url
+        })
+    }
+    const imageFile = blobToImage(image.image_binary)
+    // const myFile = new File([image.image_binary], 'image.jpeg')
+    res.end(myFile)
 })
