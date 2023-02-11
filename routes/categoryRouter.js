@@ -4,6 +4,5 @@ const auth = require('../controllers/authController')
 
 router.route('/').post(controller.addCategory).get(controller.getAllCategories)
 
-// router.route('/:id').delete(delete1).get(getOne).patch(update)
 
 module.exports = router
