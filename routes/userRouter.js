@@ -7,6 +7,7 @@ router.route('/').get(controller.getAllUsers).post(controller.createUser)
 router.route('/signup').post(auth.signUp)
 router.route('/signin').post(auth.login)
 router.route('/self').get(auth.userSelf)
+
 router.route('/logout').get(auth.logout)
 
 router.route('/location').post(controller.addLocation)
