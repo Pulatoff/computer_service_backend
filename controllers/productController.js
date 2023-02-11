@@ -6,6 +6,7 @@ const Images = require('../models/ImagesModel')
 const response = require('../utility/response')
 const multer = require('multer')
 const crypto = require('crypto')
+const fs = require('fs')
 
 const storage = multer.memoryStorage()
 
@@ -17,7 +18,7 @@ exports.addProduct = catchAsync(async (req, res, next) => {
     const { name, price, description, colors, condition, images, specifications, category_id } = req.body
 
     const image_main = await crypto.randomUUID().toString('binary')
-    console.log(req.file)
+
     const decodeImage = new Buffer(req.file[0].buffer, 'binary').toString('base64')
     const images_name = []
 
@@ -64,6 +65,14 @@ exports.getOneProduct = catchAsync(async (req, res, next) => {
 exports.getImage = catchAsync(async (req, res, next) => {
     const uuid = req.params.uuid
     const image = await Images.findOne({ where: { id: 1 } })
+    var buffer = new Buffer(image.image_binary, 'binary')
+    var bufferBase64 = buffer.toString('base64')
 
-    res.end(Buffer.from(image.image_binary, 'binary'))
+    var img = Buffer.from(bufferBase64, 'base64')
+
+    res.writeHead(200, {
+        'Content-Type': 'image/jpeg',
+        'Content-Length': img.length,
+    })
+    res.end(img)
 })
