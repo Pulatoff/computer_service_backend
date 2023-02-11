@@ -10,6 +10,7 @@ const Product = sequelize.define(
         name: { type: DataTypes.STRING, allowNull: false, validate: { min: 3, max: 250 } },
         image_main: { type: DataTypes.STRING, allowNull: false },
         views: { type: DataTypes.INTEGER, defaultValue: 1 },
+        image_binary: { type: DataTypes.BLOB },
     },
     { timestamps: true, createdAt: true, updatedAt: false }
 )
