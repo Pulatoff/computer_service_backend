@@ -83,3 +83,18 @@ exports.getOneProduct = catchAsync(async (req, res, next) => {
     })
     response(res, { product }, 200, 'You are successfully get product')
 })
+
+exports.updateProduct = catchAsync(async (req, res, next) => {
+    let { name, price, description, colors, condition, specifications } = req.body
+    const id = req.params.id
+    const product = await Product.findByPk(id, { include: ProductDetails })
+    if (!product) next(new AppError('Product not found', 404))
+    product.name = name || product.name
+    product.product_details.price = price || product.product_details.price
+    product.product_details.description = description || product.product_details.description
+    product.product_details.colors = colors || product.product_details.colors
+    product.product_details.condition = condition || product.product_details.condition
+    product.product_details.specifications = specifications || product.product_details.specifications
+    await product.save()
+    response(res, '', 203, 'You are successfully update product')
+})
