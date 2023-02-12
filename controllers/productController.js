@@ -2,34 +2,56 @@ const AppError = require('../utility/appError')
 const catchAsync = require('../utility/catchAsync')
 const Product = require('../models/productsModel')
 const ProductDetails = require('../models/productDetailsModel')
-const Images = require('../models/ImagesModel')
 const response = require('../utility/response')
 const multer = require('multer')
 const crypto = require('crypto')
-const fs = require('fs')
-
 const storage = multer.memoryStorage()
-
+const s3Client = require('../configs/s3Client')
+const { PutObjectCommand, GetObjectCommand } = require('@aws-sdk/client-s3')
+const { getSignedUrl } = require('@aws-sdk/s3-request-presigner')
 exports.upload = multer({
     storage,
 }).array('imageFiles', 4)
 
 exports.addProduct = catchAsync(async (req, res, next) => {
-    const { name, price, description, colors, condition, images, specifications, category_id } = req.body
+    const { name, price, description, colors, condition, specifications, category_id } = req.body
 
     const image_main = await crypto.randomUUID().toString('binary')
-
-    const decodeImage = new Buffer(req.files[0].buffer, 'binary').toString('base64')
+    await s3Client.send(
+        new PutObjectCommand({
+            Key: image_main,
+            Bucket: process.env.DO_SPACE_BUCKET,
+            Body: req.files[0].buffer,
+            ContentType: req.files[0].mimetype,
+        })
+    )
+    const file_url = await getSignedUrl(
+        s3Client,
+        new GetObjectCommand({ Key: image_main, Bucket: process.env.DO_SPACE_BUCKET }),
+        { expiresIn: 3600 * 24 }
+    )
     const images_name = []
+    const image_urls = []
     for (let i = 1; i < req.files.length; i++) {
-        const decodedImage = new Buffer(req.files[i].buffer, 'binary').toString('base64')
         const image = await crypto.randomUUID().toString('binary')
-        await Images.create({ image_name: image, image_binary: decodedImage })
+        await s3Client.send(
+            new PutObjectCommand({
+                Key: image,
+                Bucket: process.env.DO_SPACE_BUCKET,
+                Body: req.files[i].buffer,
+                ContentType: req.files[i].mimetype,
+            })
+        )
+        const file_urls = await getSignedUrl(
+            s3Client,
+            new GetObjectCommand({ Key: image, Bucket: process.env.DO_SPACE_BUCKET }),
+            { expiresIn: 3600 * 24 }
+        )
+        image_urls.push(file_urls)
         images_name.push(image)
     }
 
-    const product = await Product.create({ name, image_main, categoryId: category_id })
-    await Images.create({ image_name: image_main, image_binary: decodeImage })
+    const product = await Product.create({ image_url: file_url, name, image_main, categoryId: category_id })
 
     await ProductDetails.create({
         price,
@@ -39,6 +61,7 @@ exports.addProduct = catchAsync(async (req, res, next) => {
         images: images_name,
         specifications,
         productId: product.id,
+        image_urls,
     })
 
     response(res, '', 200, `You are successfully created product by id: ${product.id}`)
@@ -59,25 +82,4 @@ exports.getOneProduct = catchAsync(async (req, res, next) => {
         attributes: { exclude: ['image_binary'] },
     })
     response(res, { product }, 200, 'You are successfully get product')
-})
-
-exports.getImage = catchAsync(async (req, res, next) => {
-    const uuid = req.params.uuid
-    const image = await Images.findOne({ where: { id: 1 } })
-
-    const blobToImage = (blob) => {
-        console.log(blob)
-        return new Promise((resolve) => {
-            const url = URL.createObjectURL(blob)
-            let img = new Image()
-            img.onload = () => {
-                URL.revokeObjectURL(url)
-                resolve(img)
-            }
-            img.src = url
-        })
-    }
-    const imageFile = blobToImage(image.image_binary)
-
-    res.end(imageFile)
 })

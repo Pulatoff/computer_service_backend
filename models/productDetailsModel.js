@@ -13,6 +13,7 @@ const ProductDetail = sequelize.define(
         condition: { type: DataTypes.STRING, allowNull: false },
         images: { type: DataTypes.ARRAY(DataTypes.STRING), allowNull: false },
         specifications: { type: DataTypes.JSON, allowNull: true },
+        image_urls: { type: DataTypes.ARRAY(DataTypes.TEXT), allowNull: false },
     },
     { timestamps: true, createdAt: true, updatedAt: false }
 )
