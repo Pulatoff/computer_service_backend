@@ -98,3 +98,9 @@ exports.updateProduct = catchAsync(async (req, res, next) => {
     await product.save()
     response(res, '', 203, 'You are successfully update product')
 })
+
+exports.deleteProduct = catchAsync(async (req, res, next) => {
+    const id = req.params.id
+    await Product.destroy({ where: { id } })
+    response(res, '', 206, 'You are successfully delete product')
+})
