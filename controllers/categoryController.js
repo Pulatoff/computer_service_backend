@@ -1,5 +1,6 @@
 // models
 const Category = require('../models/categoriesModel')
+const Product = require('../models/productsModel')
 // utils
 const AppError = require('../utility/appError')
 const catchAsync = require('../utility/catchAsync')
@@ -21,7 +22,9 @@ exports.addCategory = catchAsync(async (req, res, next) => {
 
 exports.getOneCategory = catchAsync(async (req, res, next) => {
     const id = req.params.id
-    const category = await Category.findByPk(id)
+    const category = await Category.findByPk(id, {
+        include: [{ model: Product, limit: 6, attributes: { exclude: ['image_main', 'categoryId'] } }],
+    })
     response(res, { category }, 200, `You successfully get category data by id ${id}`)
 })
 
@@ -30,7 +33,7 @@ exports.updateCategory = catchAsync(async (req, res, next) => {
     const id = req.params.id
     const category = await Category.findByPk(id)
     category.name = name || category.name
-
+    await category.save()
     response(res, '', 203, 'You are successfully update category')
 })
 
