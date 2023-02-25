@@ -1,7 +1,7 @@
 const { Sequelize } = require('sequelize')
 
 const sequelize = new Sequelize(
-    process.env.NODE_ENV === 'prodcution' ? 'defaultdb' : 'service',
+    process.env.NODE_ENV === 'prodcution' ? 'defaultdb' : 'service_dev',
     'doadmin',
     'AVNS_5Lgv70KVPpGWNPXgtKP',
     {

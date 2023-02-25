@@ -11,6 +11,9 @@ const { PutObjectCommand, GetObjectCommand } = require('@aws-sdk/client-s3')
 const { getSignedUrl } = require('@aws-sdk/s3-request-presigner')
 const { Op } = require('sequelize')
 const Category = require('../models/categoriesModel')
+const sequelize = require('sequelize')
+const { query } = require('express')
+
 exports.upload = multer({
     storage,
 }).array('imageFiles', 4)
@@ -113,10 +116,11 @@ exports.searchProducts = catchAsync(async (req, res, next) => {
     const search = req.query.search
 
     const results = await Product.findAll({
+        include: [{ model: Category }, { model: ProductDetails, attributes: { exclude: ['images', 'productId'] } }],
         where: {
             [Op.or]: [{ name: { [Op.like]: '%' + search + '%' } }],
         },
-        include: [{ model: Category }],
+        attributes: { exclude: ['image_main', 'categoryId'] },
     })
     response(res, { results }, 200, 'You are successfully delete product')
 })
