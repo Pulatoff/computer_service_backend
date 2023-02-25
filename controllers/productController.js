@@ -5,7 +5,6 @@ const ProductDetails = require('../models/productDetailsModel')
 const response = require('../utility/response')
 const multer = require('multer')
 const crypto = require('crypto')
-const storage = multer.memoryStorage()
 const s3Client = require('../configs/s3Client')
 const { PutObjectCommand, GetObjectCommand } = require('@aws-sdk/client-s3')
 const { getSignedUrl } = require('@aws-sdk/s3-request-presigner')
@@ -13,6 +12,8 @@ const { Op } = require('sequelize')
 const Category = require('../models/categoriesModel')
 const sequelize = require('sequelize')
 const { query } = require('express')
+
+const storage = multer.memoryStorage()
 
 exports.upload = multer({
     storage,

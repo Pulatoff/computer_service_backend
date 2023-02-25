@@ -1,7 +1,7 @@
 const sequelize = require('../configs/db')
 const { DataTypes } = require('sequelize')
 
-const Services = sequelize.define(
+const Service = sequelize.define(
     'services',
     {
         id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
@@ -14,4 +14,4 @@ const Services = sequelize.define(
     { timestamps: true, createdAt: true, updatedAt: false }
 )
 
-module.exports = Services
+module.exports = Service
