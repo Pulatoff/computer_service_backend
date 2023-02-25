@@ -8,7 +8,7 @@ const crypto = require('crypto')
 const s3Client = require('../configs/s3Client')
 const { PutObjectCommand, GetObjectCommand } = require('@aws-sdk/client-s3')
 const { getSignedUrl } = require('@aws-sdk/s3-request-presigner')
-const { Op } = require('sequelize')
+const { Op, Sequelize } = require('sequelize')
 const Category = require('../models/categoriesModel')
 const Review = require('../models/reviewsModel')
 const User = require('../models/userModel')
@@ -89,11 +89,22 @@ exports.getOneProduct = catchAsync(async (req, res, next) => {
             { model: Category, include: [{ model: Product, attributes: { exclude: ['image_main', 'categoryId'] } }] },
             {
                 model: Review,
-                attributes: { exclude: ['productId', 'userId'] },
+                attributes: { exclude: ['userId', 'productId'] },
                 include: [{ model: User, attributes: ['username'] }],
             },
         ],
-        attributes: { exclude: ['image_main', 'categoryId'] },
+        attributes: {
+            exclude: ['image_main', 'categoryId'],
+            include: [[Sequelize.fn('AVG', Sequelize.col('reviews.rating')), 'avgRating']],
+        },
+        group: [
+            'products.id',
+            'product_detail.id',
+            'category.id',
+            'category->products.id',
+            'reviews.id',
+            'reviews->user.id',
+        ],
     })
     response(res, { product }, 200, 'You are successfully get product')
 })
@@ -137,6 +148,6 @@ exports.searchProducts = catchAsync(async (req, res, next) => {
 exports.addReview = catchAsync(async (req, res, next) => {
     const { rating, body } = req.body
     const productId = req.params.productId
-    const review = await Review.create({ rating, body, userId: req.user.id, productId })
+    await Review.create({ rating, body, userId: req.user.id, productId })
     response(res, '', 200, 'You are successfully review product')
 })
