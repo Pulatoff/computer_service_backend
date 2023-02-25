@@ -9,6 +9,8 @@ const storage = multer.memoryStorage()
 const s3Client = require('../configs/s3Client')
 const { PutObjectCommand, GetObjectCommand } = require('@aws-sdk/client-s3')
 const { getSignedUrl } = require('@aws-sdk/s3-request-presigner')
+const { Op } = require('sequelize')
+const Category = require('../models/categoriesModel')
 exports.upload = multer({
     storage,
 }).array('imageFiles', 4)
@@ -105,4 +107,16 @@ exports.deleteProduct = catchAsync(async (req, res, next) => {
     const id = req.params.id
     await Product.destroy({ where: { id } })
     response(res, '', 206, 'You are successfully delete product')
+})
+
+exports.searchProducts = catchAsync(async (req, res, next) => {
+    const search = req.query.search
+
+    const results = await Product.findAll({
+        where: {
+            [Op.or]: [{ name: { [Op.like]: '%' + search + '%' } }],
+        },
+        include: [{ model: Category }],
+    })
+    response(res, { results }, 200, 'You are successfully delete product')
 })
