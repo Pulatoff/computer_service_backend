@@ -11,6 +11,7 @@ const { getSignedUrl } = require('@aws-sdk/s3-request-presigner')
 const { Op } = require('sequelize')
 const Category = require('../models/categoriesModel')
 const Review = require('../models/reviewsModel')
+const User = require('../models/userModel')
 
 const storage = multer.memoryStorage()
 
@@ -86,7 +87,11 @@ exports.getOneProduct = catchAsync(async (req, res, next) => {
         include: [
             { model: ProductDetails, attributes: { exclude: ['images', 'productId'] } },
             { model: Category, include: [{ model: Product, attributes: { exclude: ['image_main', 'categoryId'] } }] },
-            { model: Review, attributes: { exclude: ['productId'] } },
+            {
+                model: Review,
+                attributes: { exclude: ['productId', 'userId'] },
+                include: [{ model: User, attributes: ['username'] }],
+            },
         ],
         attributes: { exclude: ['image_main', 'categoryId'] },
     })
@@ -131,7 +136,7 @@ exports.searchProducts = catchAsync(async (req, res, next) => {
 
 exports.addReview = catchAsync(async (req, res, next) => {
     const { rating, body } = req.body
-
-    const review = await Review.create({ rating, body, userId })
+    const productId = req.params.productId
+    const review = await Review.create({ rating, body, userId: req.user.id, productId })
     response(res, '', 200, 'You are successfully review product')
 })
