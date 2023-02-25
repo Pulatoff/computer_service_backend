@@ -10,8 +10,7 @@ const { PutObjectCommand, GetObjectCommand } = require('@aws-sdk/client-s3')
 const { getSignedUrl } = require('@aws-sdk/s3-request-presigner')
 const { Op } = require('sequelize')
 const Category = require('../models/categoriesModel')
-const sequelize = require('sequelize')
-const { query } = require('express')
+const Review = require('../models/reviewsModel')
 
 const storage = multer.memoryStorage()
 
@@ -87,6 +86,7 @@ exports.getOneProduct = catchAsync(async (req, res, next) => {
         include: [
             { model: ProductDetails, attributes: { exclude: ['images', 'productId'] } },
             { model: Category, include: [{ model: Product, attributes: { exclude: ['image_main', 'categoryId'] } }] },
+            { model: Review, attributes: { exclude: ['productId'] } },
         ],
         attributes: { exclude: ['image_main', 'categoryId'] },
     })
@@ -127,4 +127,11 @@ exports.searchProducts = catchAsync(async (req, res, next) => {
         attributes: { exclude: ['image_main', 'categoryId'] },
     })
     response(res, { results }, 200, 'You are successfully delete product')
+})
+
+exports.addReview = catchAsync(async (req, res, next) => {
+    const { rating, body } = req.body
+
+    const review = await Review.create({ rating, body, userId })
+    response(res, '', 200, 'You are successfully review product')
 })
