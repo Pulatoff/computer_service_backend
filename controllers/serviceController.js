@@ -46,3 +46,27 @@ exports.getServices = catchAsync(async (req, res, next) => {
     const services = await Service.findAll({ limit: 6 })
     response(res, { services }, 200, 'You are successfully get services')
 })
+
+exports.getOneService = catchAsync(async (req, res, next) => {
+    const id = req.params.id
+    const service = await Service.findByPk(id)
+    response(res, { service }, 200, 'You are successfully get service')
+})
+
+exports.updateService = catchAsync(async (req, res, next) => {
+    const { name, features, resolve_problems } = req.body
+    const id = req.params.id
+    const service = await Service.findByPk(id)
+    service.name = name || service.name
+    service.features = features || service.features
+    service.resolve_problems = resolve_problems || service.resolve_problems
+
+    await service.save()
+    response(res, { service }, 203, 'You are successfully update service')
+})
+
+exports.deleteService = catchAsync(async (req, res, next) => {
+    const id = req.params.id
+    await Service.destroy({ where: { id } })
+    response(res, '', 206, `You are successfully delete service by id ${id}`)
+})
