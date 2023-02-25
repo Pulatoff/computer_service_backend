@@ -42,4 +42,7 @@ exports.addService = catchAsync(async (req, res, next) => {
     response(res, { service }, 201, 'You successfully create service')
 })
 
-exports.getServices = catchAsync(async (req, res, next) => {})
+exports.getServices = catchAsync(async (req, res, next) => {
+    const services = await Service.findAll({ limit: 6 })
+    response(res, { services }, 200, 'You are successfully get services')
+})
