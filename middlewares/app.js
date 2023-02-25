@@ -6,9 +6,7 @@ const { urlencoded } = require('express')
 const cors = require('cors')
 const cookieParser = require('cookie-parser')
 
-const review = require('../routes/reviewRouter')
 const categoryRouter = require('../routes/categoryRouter')
-const brandsModel = require('../routes/brandRoutes')
 const auth = require('../routes/userRouter')
 const product = require('../routes/productRoute')
 const AppError = require('../utility/appError')
@@ -36,9 +34,7 @@ app.use(express.static('public'))
 // routes
 app.use('/api/v1/users', auth)
 app.use('/api/v1/products', product)
-app.use('/api/v1/brands', brandsModel)
 app.use('/api/v1/categories', categoryRouter)
-app.use('/api/v1/reviews', review)
 
 app.all('*', (req, res, next) => {
     next(new AppError('url not found', 404))

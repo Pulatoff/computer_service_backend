@@ -15,11 +15,11 @@ const Basket = sequelize.define(
     { timestamps: true, createdAt: true, updatedAt: false }
 )
 
-Product.hasMany(Basket)
-Basket.belongsTo(Product)
+// Product.hasMany(Basket)
+// Basket.belongsTo(Product)
 
-User.hasMany(Basket)
-Basket.belongsTo(User)
+// User.hasMany(Basket)
+// Basket.belongsTo(User)
 
 Basket.hasMany(Location)
 Location.belongsTo(Basket)
