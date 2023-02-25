@@ -83,8 +83,11 @@ exports.getAllProducts = catchAsync(async (req, res, next) => {
 exports.getOneProduct = catchAsync(async (req, res, next) => {
     const id = req.params.id
     const product = await Product.findByPk(id, {
-        include: [{ model: ProductDetails }],
-        attributes: { exclude: ['image_binary'] },
+        include: [
+            { model: ProductDetails, attributes: { exclude: ['images', 'productId'] } },
+            { model: Category, include: [{ model: Product, attributes: { exclude: ['image_main', 'categoryId'] } }] },
+        ],
+        attributes: { exclude: ['image_main', 'categoryId'] },
     })
     response(res, { product }, 200, 'You are successfully get product')
 })
