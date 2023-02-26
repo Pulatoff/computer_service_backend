@@ -8,7 +8,8 @@ const crypto = require('crypto')
 const s3Client = require('../configs/s3Client')
 const { PutObjectCommand, GetObjectCommand } = require('@aws-sdk/client-s3')
 const { getSignedUrl } = require('@aws-sdk/s3-request-presigner')
-const { Op, Sequelize } = require('sequelize')
+const { Op } = require('sequelize')
+const sequelize = require('sequelize')
 const Category = require('../models/categoriesModel')
 const Review = require('../models/reviewsModel')
 const User = require('../models/userModel')
@@ -89,13 +90,15 @@ exports.getOneProduct = catchAsync(async (req, res, next) => {
             { model: Category, include: [{ model: Product, attributes: { exclude: ['image_main', 'categoryId'] } }] },
             {
                 model: Review,
+
                 attributes: { exclude: ['userId', 'productId'] },
                 include: [{ model: User, attributes: ['username'] }],
             },
         ],
+        separate: true,
         attributes: {
             exclude: ['image_main', 'categoryId'],
-            include: [[Sequelize.fn('AVG', Sequelize.col('reviews.rating')), 'avgRating']],
+            include: [[sequelize.fn(`ROUND`, sequelize.fn(`AVG`, sequelize.col(`reviews.rating`)), 2), `ratingAvg`]],
         },
         group: [
             'products.id',
