@@ -10,6 +10,8 @@ const Service = sequelize.define(
         image_url: { type: DataTypes.TEXT, allowNull: false },
         features: { type: DataTypes.ARRAY(DataTypes.STRING) },
         resolve_problems: { type: DataTypes.ARRAY(DataTypes.STRING) },
+        description: { type: DataTypes.TEXT, allowNull: true },
+        phone: { type: DataTypes.STRING, allowNull: true },
     },
     { timestamps: true, createdAt: true, updatedAt: false }
 )
