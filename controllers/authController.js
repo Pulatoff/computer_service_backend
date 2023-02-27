@@ -31,6 +31,7 @@ const resUserType = (user) => {
         role: user.role,
         username: user.username,
         location: user.location,
+        basket: user.basket,
         createdAt: user.createdAt,
     }
 }
@@ -61,7 +62,7 @@ exports.login = catchAsync(async (req, res, next) => {
 
     const user = await User.findOne({
         where: { email },
-        include: [{ model: Location, attributes: { exclude: ['userId'] } }],
+        include: [{ model: Location, attributes: { exclude: ['userId'] } }, { model: Basket }],
     })
 
     if (!user) {
@@ -75,8 +76,9 @@ exports.login = catchAsync(async (req, res, next) => {
     }
 
     const token = await createToken(user)
+    const newUser = await User.findByPk(user.id, { include: [{ model: Basket, attributes: { exclude: ['userId'] } }] })
     sendCookie(res, token)
-    response(res, { user: resUserType(user) }, 201, 'you successfully sign in')
+    response(res, { user: resUserType(newUser) }, 201, 'you successfully sign in')
 })
 
 exports.protect = catchAsync(async (req, res, next) => {
@@ -110,7 +112,12 @@ exports.protect = catchAsync(async (req, res, next) => {
 
 exports.userSelf = catchAsync(async (req, res, next) => {
     const id = req.user.id
-    const user = await User.findByPk(id, { include: [{ model: Location, attributes: { exclude: ['userId'] } }] })
+    const user = await User.findByPk(id, {
+        include: [
+            { model: Location, attributes: { exclude: ['userId'] } },
+            { model: Basket, attributes: { exclude: ['userId'] } },
+        ],
+    })
     response(res, { user: resUserType(user) }, 200, 'You are refresh page')
 })
 
