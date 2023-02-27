@@ -7,6 +7,7 @@ const Location = require('../models/locationsModel')
 const AppError = require('../utility/appError')
 const catchAsync = require('../utility/catchAsync')
 const response = require('../utility/response')
+const Basket = require('../models/basketsModel')
 
 const createToken = async ({ id }) => {
     return await jwt.sign({ id }, process.env.JWT_SECRET, {
@@ -45,7 +46,7 @@ exports.signUp = catchAsync(async (req, res, next) => {
     }
 
     const user = await User.create({ username, email, password })
-
+    const basket = await Basket.create({ userId: user.id })
     const token = await createToken(user)
     sendCookie(res, token)
     response(res, { user: resUserType(user) }, 201, 'you successfully sign up')
