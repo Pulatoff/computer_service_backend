@@ -1,9 +1,7 @@
 const sequelize = require('../configs/db')
 const { DataTypes } = require('sequelize')
 // models
-const Product = require('./productsModel')
 const User = require('./userModel')
-const Location = require('./locationsModel')
 
 const Basket = sequelize.define(
     'baskets',
@@ -15,8 +13,5 @@ const Basket = sequelize.define(
 
 User.hasOne(Basket)
 Basket.belongsTo(User)
-
-Basket.hasMany(Location)
-Location.belongsTo(Basket)
 
 module.exports = Basket
