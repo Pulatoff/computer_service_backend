@@ -136,7 +136,7 @@ exports.deleteProduct = catchAsync(async (req, res, next) => {
 })
 
 exports.searchProducts = catchAsync(async (req, res, next) => {
-    const { search, minSum, maxSum } = req.query
+    const { search } = req.query
 
     const results = await Product.findAll({
         include: [{ model: Category }, { model: ProductDetails, attributes: { exclude: ['images', 'productId'] } }],
