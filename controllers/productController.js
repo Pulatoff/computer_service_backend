@@ -136,15 +136,19 @@ exports.deleteProduct = catchAsync(async (req, res, next) => {
 })
 
 exports.searchProducts = catchAsync(async (req, res, next) => {
-    const search = req.query.search
+    const { search, minSum, maxSum } = req.query
 
     const results = await Product.findAll({
         include: [{ model: Category }, { model: ProductDetails, attributes: { exclude: ['images', 'productId'] } }],
         where: {
-            [Op.or]: [{ name: { [Op.like]: '%' + search + '%' } }],
+            name: { [Op.like]: '%' + search + '%' },
         },
-        attributes: { exclude: ['image_main', 'categoryId'] },
+        attributes: {
+            exclude: ['image_main', 'categoryId'],
+        },
+        group: ['products.id', 'category.id', 'product_detail.id'],
     })
+
     response(res, { results }, 200, 'You are successfully delete product')
 })
 

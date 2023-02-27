@@ -31,6 +31,7 @@ exports.addService = catchAsync(async (req, res, next) => {
         new GetObjectCommand({ Key: filename, Bucket: process.env.DO_SPACE_BUCKET }),
         { expiresIn: 3600 * 24 }
     )
+
     const service = await Service.create({
         name,
         image_url,
