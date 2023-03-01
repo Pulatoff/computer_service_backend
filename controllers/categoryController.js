@@ -1,13 +1,17 @@
 // models
 const Category = require('../models/categoriesModel')
 const Product = require('../models/productsModel')
+const ProductDetails = require('../models/productDetailsModel')
 // utils
 const AppError = require('../utility/appError')
 const catchAsync = require('../utility/catchAsync')
 const response = require('../utility/response')
 
 exports.getAllCategories = catchAsync(async (req, res, next) => {
-    const categories = await Category.findAll({ limit: 10 })
+    const categories = await Category.findAll({
+        limit: 10,
+        include: [{ model: Product, limit: 10, include: ProductDetails }],
+    })
     response(res, { categories }, 200, 'you are get categories')
 })
 
