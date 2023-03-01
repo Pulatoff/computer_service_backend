@@ -8,7 +8,7 @@ const Basket = sequelize.define(
     {
         id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
     },
-    { timestamps: false }
+    { timestamps: true, createdAt: true, updatedAt: false }
 )
 
 User.hasOne(Basket)
