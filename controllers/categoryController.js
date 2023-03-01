@@ -2,6 +2,10 @@
 const Category = require('../models/categoriesModel')
 const Product = require('../models/productsModel')
 const ProductDetails = require('../models/productDetailsModel')
+const Review = require('../models/reviewsModel')
+const User = require('../models/userModel')
+const sequelize = require('sequelize')
+const { Op } = require('sequelize')
 // utils
 const AppError = require('../utility/appError')
 const catchAsync = require('../utility/catchAsync')
@@ -10,7 +14,25 @@ const response = require('../utility/response')
 exports.getAllCategories = catchAsync(async (req, res, next) => {
     const categories = await Category.findAll({
         limit: 10,
-        include: [{ model: Product, limit: 10, include: ProductDetails }],
+
+        include: [
+            {
+                model: Product,
+                limit: 10,
+                include: [
+                    { model: ProductDetails, attributes: { exclude: ['images', 'productId'] } },
+                    {
+                        model: Review,
+                        attributes: { exclude: ['userId', 'productId'] },
+                        include: [{ model: User, attributes: ['username'] }],
+                    },
+                ],
+
+                attributes: [
+                    // [sequelize.fn(`ROUND`, sequelize.fn(`AVG`, sequelize.col(`reviews.rating`)), 2), `ratingAvg`],
+                ],
+            },
+        ],
     })
     response(res, { categories }, 200, 'you are get categories')
 })

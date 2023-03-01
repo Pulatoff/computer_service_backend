@@ -76,8 +76,29 @@ exports.addProduct = catchAsync(async (req, res, next) => {
 
 exports.getAllProducts = catchAsync(async (req, res, next) => {
     const products = await Product.findAll({
-        include: [{ model: ProductDetails }],
-        attributes: { exclude: ['image_binary'] },
+        include: [
+            { model: ProductDetails, attributes: { exclude: ['images', 'productId'] } },
+            { model: Category, include: [{ model: Product, attributes: { exclude: ['image_main', 'categoryId'] } }] },
+            {
+                model: Review,
+
+                attributes: { exclude: ['userId', 'productId'] },
+                include: [{ model: User, attributes: ['username'] }],
+            },
+        ],
+        separate: true,
+        attributes: {
+            exclude: ['image_main', 'categoryId'],
+            include: [[sequelize.fn(`ROUND`, sequelize.fn(`AVG`, sequelize.col(`reviews.rating`)), 2), `ratingAvg`]],
+        },
+        group: [
+            'products.id',
+            'product_detail.id',
+            'category.id',
+            'category->products.id',
+            'reviews.id',
+            'reviews->user.id',
+        ],
     })
     response(res, { products }, 200, 'You are successfully get product')
 })
