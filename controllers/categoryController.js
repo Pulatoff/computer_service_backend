@@ -27,10 +27,6 @@ exports.getAllCategories = catchAsync(async (req, res, next) => {
                         include: [{ model: User, attributes: ['username'] }],
                     },
                 ],
-
-                attributes: [
-                    // [sequelize.fn(`ROUND`, sequelize.fn(`AVG`, sequelize.col(`reviews.rating`)), 2), `ratingAvg`],
-                ],
             },
         ],
     })
