@@ -117,8 +117,8 @@ exports.deleteProduct = catchAsync(async (req, res, next) => {
 })
 
 exports.searchProducts = catchAsync(async (req, res, next) => {
-    const { search, minPrice, maxPrice, createdAt } = req.query
-
+    const { search, minPrice, maxPrice, sort } = req.query
+    const order = JSON.stringify(sort)
     const results = await Product.findAll({
         include: [
             { model: Category },

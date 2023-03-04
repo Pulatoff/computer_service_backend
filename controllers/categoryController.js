@@ -26,10 +26,6 @@ exports.getAllCategories = catchAsync(async (req, res, next) => {
             {
                 model: Product,
                 limit: 10,
-                attributes: {
-                    exclude: [],
-                    include: [],
-                },
                 include: [
                     { model: ProductDetails },
                     {
