@@ -30,8 +30,6 @@ exports.getAllCategories = catchAsync(async (req, res, next) => {
                     { model: ProductDetails },
                     {
                         model: Review,
-                        required: true,
-                        duplicating: false,
                         include: [{ model: User, attributes: ['username'] }],
                     },
                 ],
