@@ -1,12 +1,9 @@
 const Service = require('../models/servicesModel')
-const s3Client = require('../configs/s3Client')
 const catchAsync = require('../utility/catchAsync')
 const multer = require('multer')
 const response = require('../utility/response')
 const crypto = require('crypto')
-const { PutObjectCommand, GetObjectCommand } = require('@aws-sdk/client-s3')
-const { getSignedUrl } = require('@aws-sdk/s3-request-presigner')
-
+const Image = require('../models/imageModel')
 const storage = multer.memoryStorage()
 
 exports.upload = multer({
@@ -15,22 +12,10 @@ exports.upload = multer({
 
 exports.addService = catchAsync(async (req, res, next) => {
     const { name, features, resolve_problems, phone, description } = req.body
-    const filename = crypto.randomUUID()
+    const filename = crypto.randomUUID() + '.' + req.file.mimetype.split('/')[1]
+    await Image.create({ image_name: filename, image: req.file.buffer })
 
-    await s3Client.send(
-        new PutObjectCommand({
-            Key: filename,
-            Bucket: process.env.DO_SPACE_BUCKET,
-            Body: req.file.buffer,
-            ContentType: req.file.mimetype,
-        })
-    )
-
-    const image_url = await getSignedUrl(
-        s3Client,
-        new GetObjectCommand({ Key: filename, Bucket: process.env.DO_SPACE_BUCKET }),
-        { expiresIn: 3600 * 24 }
-    )
+    const image_url = process.env.HOST_URL + '/api/v1/products/images/' + filename
 
     const service = await Service.create({
         name,

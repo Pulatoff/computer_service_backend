@@ -9,10 +9,11 @@ const s3Client = require('../configs/s3Client')
 const { PutObjectCommand, GetObjectCommand } = require('@aws-sdk/client-s3')
 const { getSignedUrl } = require('@aws-sdk/s3-request-presigner')
 const { Op } = require('sequelize')
-const sequelize = require('sequelize')
+const stream = require('stream')
 const Category = require('../models/categoriesModel')
 const Review = require('../models/reviewsModel')
 const User = require('../models/userModel')
+const Image = require('../models/imageModel')
 
 const storage = multer.memoryStorage()
 
@@ -23,38 +24,17 @@ exports.upload = multer({
 exports.addProduct = catchAsync(async (req, res, next) => {
     const { name, price, description, colors, condition, specifications, category_id } = req.body
 
-    const image_main = await crypto.randomUUID().toString('binary')
-    await s3Client.send(
-        new PutObjectCommand({
-            Key: image_main,
-            Bucket: process.env.DO_SPACE_BUCKET,
-            Body: req.files[0].buffer,
-            ContentType: req.files[0].mimetype,
-        })
-    )
-    const file_url = await getSignedUrl(
-        s3Client,
-        new GetObjectCommand({ Key: image_main, Bucket: process.env.DO_SPACE_BUCKET }),
-        { expiresIn: 3600 * 24 }
-    )
+    const image_main = crypto.randomUUID().toString('binary') + '.' + req.files[0].mimetype.split('/')[1]
+    await Image.create({ image_name: image_main, image: req.files[0].buffer })
+    const file_url = process.env.HOST_URL + '/api/v1/products/images/' + image_main
     const images_name = []
     const image_urls = []
     for (let i = 1; i < req.files.length; i++) {
-        const image = await crypto.randomUUID().toString('binary')
-        await s3Client.send(
-            new PutObjectCommand({
-                Key: image,
-                Bucket: process.env.DO_SPACE_BUCKET,
-                Body: req.files[i].buffer,
-                ContentType: req.files[i].mimetype,
-            })
-        )
-        const file_urls = await getSignedUrl(
-            s3Client,
-            new GetObjectCommand({ Key: image, Bucket: process.env.DO_SPACE_BUCKET }),
-            { expiresIn: 3600 * 24 }
-        )
-        image_urls.push(file_urls)
+        const image = crypto.randomUUID().toString('binary') + '.' + req.files[0].mimetype.split('/')[i]
+        await Image.create({ image_name: image, image: req.files[i].buffer })
+        const file_url = process.env.HOST_URL + '/api/v1/products/images/' + image
+
+        image_urls.push(file_url)
         images_name.push(image)
     }
 
@@ -165,4 +145,17 @@ exports.addReview = catchAsync(async (req, res, next) => {
     await product.save()
 
     response(res, '', 200, 'You are successfully review product')
+})
+
+exports.sendImage = catchAsync(async (req, res, next) => {
+    const image_name = req.params.image_name
+    const imageOption = await Image.findOne({ where: { image_name } })
+
+    const readStream = new stream.PassThrough()
+    readStream.end(imageOption.image)
+
+    res.set('Content-disposition', 'attachment; filename=' + imageOption.image_name)
+    res.set('Content-Type', 'image/jpeg')
+
+    readStream.pipe(res)
 })
