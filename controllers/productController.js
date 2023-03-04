@@ -5,15 +5,13 @@ const ProductDetails = require('../models/productDetailsModel')
 const response = require('../utility/response')
 const multer = require('multer')
 const crypto = require('crypto')
-const s3Client = require('../configs/s3Client')
-const { PutObjectCommand, GetObjectCommand } = require('@aws-sdk/client-s3')
-const { getSignedUrl } = require('@aws-sdk/s3-request-presigner')
 const { Op } = require('sequelize')
 const stream = require('stream')
 const Category = require('../models/categoriesModel')
 const Review = require('../models/reviewsModel')
 const User = require('../models/userModel')
 const Image = require('../models/imageModel')
+const sequelize = require('sequelize')
 
 const storage = multer.memoryStorage()
 
@@ -119,20 +117,36 @@ exports.deleteProduct = catchAsync(async (req, res, next) => {
 })
 
 exports.searchProducts = catchAsync(async (req, res, next) => {
-    const { search } = req.query
+    const { search, minPrice, maxPrice, createdAt } = req.query
 
     const results = await Product.findAll({
-        include: [{ model: Category }, { model: ProductDetails, attributes: { exclude: ['images', 'productId'] } }],
+        include: [
+            { model: Category },
+            {
+                model: ProductDetails,
+                attributes: {
+                    exclude: ['images', 'productId'],
+                },
+            },
+        ],
         where: {
             name: { [Op.like]: '%' + search + '%' },
         },
         attributes: {
             exclude: ['image_main', 'categoryId'],
+            include: [],
         },
         group: ['products.id', 'category.id', 'product_detail.id'],
     })
 
-    response(res, { results }, 200, 'You are successfully delete product')
+    const maxPricex = Math.max.apply(
+        Math,
+        results.map(function (o) {
+            return o.product_detail.price
+        })
+    )
+
+    response(res, { results, options: { maxPricex } }, 200, 'You are successfully delete product')
 })
 
 exports.addReview = catchAsync(async (req, res, next) => {
