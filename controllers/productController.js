@@ -86,19 +86,10 @@ exports.getAllProducts = catchAsync(async (req, res, next) => {
                 include: [{ model: User, attributes: ['username'] }],
             },
         ],
-        separate: true,
+
         attributes: {
             exclude: ['image_main', 'categoryId'],
-            include: [[sequelize.fn(`ROUND`, sequelize.fn(`AVG`, sequelize.col(`reviews.rating`)), 2), `ratingAvg`]],
         },
-        group: [
-            'products.id',
-            'product_detail.id',
-            'category.id',
-            'category->products.id',
-            'reviews.id',
-            'reviews->user.id',
-        ],
     })
     response(res, { products }, 200, 'You are successfully get product')
 })
@@ -116,19 +107,10 @@ exports.getOneProduct = catchAsync(async (req, res, next) => {
                 include: [{ model: User, attributes: ['username'] }],
             },
         ],
-        separate: true,
+
         attributes: {
             exclude: ['image_main', 'categoryId'],
-            include: [[sequelize.fn(`ROUND`, sequelize.fn(`AVG`, sequelize.col(`reviews.rating`)), 2), `ratingAvg`]],
         },
-        group: [
-            'products.id',
-            'product_detail.id',
-            'category.id',
-            'category->products.id',
-            'reviews.id',
-            'reviews->user.id',
-        ],
     })
     response(res, { product }, 200, 'You are successfully get product')
 })
@@ -175,12 +157,12 @@ exports.searchProducts = catchAsync(async (req, res, next) => {
 
 exports.addReview = catchAsync(async (req, res, next) => {
     const { rating, body } = req.body
-
     const productId = req.params.productId
     const product = await Product.findByPk(productId, { include: Review })
-    console.log(product.avgRating)
-    product.avgRating = product.reviews.length !== 0 ? product.avgRating + rating / product.reviews.length : rating
-
+    product.avg_rating =
+        product.reviews.length !== 0 ? (product.avg_rating + rating) / (product.reviews.length + 1) : rating
     await Review.create({ rating, body, userId: req.user.id, productId, product_id: productId })
+    await product.save()
+
     response(res, '', 200, 'You are successfully review product')
 })
