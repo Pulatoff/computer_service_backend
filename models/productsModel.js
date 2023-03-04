@@ -10,6 +10,7 @@ const Product = sequelize.define(
         image_main: { type: DataTypes.STRING, allowNull: false },
         views: { type: DataTypes.INTEGER, defaultValue: 1 },
         image_url: { type: DataTypes.TEXT },
+        avg_rating: { type: DataTypes.FLOAT, defaultValue: 0 },
     },
     { timestamps: true, createdAt: true, updatedAt: false }
 )

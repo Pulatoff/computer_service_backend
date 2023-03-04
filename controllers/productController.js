@@ -175,7 +175,12 @@ exports.searchProducts = catchAsync(async (req, res, next) => {
 
 exports.addReview = catchAsync(async (req, res, next) => {
     const { rating, body } = req.body
+
     const productId = req.params.productId
-    await Review.create({ rating, body, userId: req.user.id, productId })
+    const product = await Product.findByPk(productId, { include: Review })
+    console.log(product.avgRating)
+    product.avgRating = product.reviews.length !== 0 ? product.avgRating + rating / product.reviews.length : rating
+
+    await Review.create({ rating, body, userId: req.user.id, productId, product_id: productId })
     response(res, '', 200, 'You are successfully review product')
 })

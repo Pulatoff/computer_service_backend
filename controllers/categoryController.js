@@ -14,16 +14,22 @@ const response = require('../utility/response')
 exports.getAllCategories = catchAsync(async (req, res, next) => {
     const categories = await Category.findAll({
         limit: 10,
-
         include: [
             {
                 model: Product,
                 limit: 10,
+                attributes: {
+                    exclude: [],
+                    include: [
+                        [sequelize.fn(`ROUND`, sequelize.fn(`AVG`, sequelize.col(`reviews.rating`)), 2), `avggg`],
+                    ],
+                },
                 include: [
-                    { model: ProductDetails, attributes: { exclude: ['images', 'productId'] } },
+                    { model: ProductDetails },
                     {
                         model: Review,
-                        attributes: { exclude: ['userId', 'productId'] },
+                        required: true,
+                        duplicating: false,
                         include: [{ model: User, attributes: ['username'] }],
                     },
                 ],
