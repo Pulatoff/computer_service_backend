@@ -147,18 +147,26 @@ exports.searchProducts = catchAsync(async (req, res, next) => {
         include: [{ model: Product, include: [{ model: ProductDetails }, { model: Review }] }],
     })
 
+    products.map((val) => {
+        results.push(val)
+    })
     category.map((val) => {
-        results.push(val.products)
+        val.products.map((val) => {
+            results.push(val)
+        })
     })
     const maxPricex = Math.max.apply(
         Math,
         results.map(function (o) {
-            console.log(o.product_detail)
-            return o?.product_detail?.price
+            return o.product_detail?.price
         })
     )
 
-    response(res, { results, options: { maxPrice: maxPricex }, category }, 200, 'You are successfully delete product')
+    results.sort((b, a) => {
+        return a.product_detail.price - b.product_detail.price
+    })
+
+    response(res, { results, options: { maxPrice: maxPricex } }, 200, 'You are successfully delete product')
 })
 
 exports.addReview = catchAsync(async (req, res, next) => {
