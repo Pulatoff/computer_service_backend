@@ -11,7 +11,7 @@ exports.upload = multer({
 }).single('image')
 
 exports.addService = catchAsync(async (req, res, next) => {
-    const { name, features, resolve_problems, phone, description } = req.body
+    let { name, features, resolve_problems, phone, description } = req.body
     const filename = crypto.randomUUID() + '.' + req.file.mimetype.split('/')[1]
     await Image.create({ image_name: filename, image: req.file.buffer })
 
@@ -21,8 +21,8 @@ exports.addService = catchAsync(async (req, res, next) => {
         name,
         image_url,
         image: filename,
-        features: JSON.parse(features),
-        resolve_problems: JSON.parse(resolve_problems),
+        features: typeof features === 'string' ? JSON.parse(features) : features,
+        resolve_problems: typeof resolve_problems === 'string' ? JSON.parse(resolve_problems) : resolve_problems,
         phone,
         description,
     })

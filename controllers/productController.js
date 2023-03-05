@@ -119,7 +119,8 @@ exports.deleteProduct = catchAsync(async (req, res, next) => {
 exports.searchProducts = catchAsync(async (req, res, next) => {
     const { search, minPrice, maxPrice, sort } = req.query
     const order = JSON.stringify(sort)
-    const results = await Product.findAll({
+    const results = []
+    const products = await Product.findAll({
         include: [
             { model: Category },
             {
@@ -139,14 +140,25 @@ exports.searchProducts = catchAsync(async (req, res, next) => {
         group: ['products.id', 'category.id', 'product_detail.id'],
     })
 
+    const category = await Category.findAll({
+        where: {
+            name: { [Op.like]: '%' + search + '%' },
+        },
+        include: [{ model: Product, include: [{ model: ProductDetails }, { model: Review }] }],
+    })
+
+    category.map((val) => {
+        results.push(val.products)
+    })
     const maxPricex = Math.max.apply(
         Math,
         results.map(function (o) {
-            return o.product_detail.price
+            console.log(o.product_detail)
+            return o?.product_detail?.price
         })
     )
 
-    response(res, { results, options: { maxPricex } }, 200, 'You are successfully delete product')
+    response(res, { results, options: { maxPrice: maxPricex }, category }, 200, 'You are successfully delete product')
 })
 
 exports.addReview = catchAsync(async (req, res, next) => {

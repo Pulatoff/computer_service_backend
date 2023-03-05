@@ -4,20 +4,10 @@ const Product = require('../models/productsModel')
 const ProductDetails = require('../models/productDetailsModel')
 const Review = require('../models/reviewsModel')
 const User = require('../models/userModel')
-const sequelize = require('sequelize')
-const Image = require('../models/imageModel')
-const multer = require('multer')
-const { Blob } = require('node:buffer')
 // utils
 const AppError = require('../utility/appError')
 const catchAsync = require('../utility/catchAsync')
 const response = require('../utility/response')
-const stream = require('stream')
-const storage = multer.memoryStorage()
-
-exports.upload = multer({
-    storage,
-}).single('image')
 
 exports.getAllCategories = catchAsync(async (req, res, next) => {
     const categories = await Category.findAll({
@@ -70,5 +60,3 @@ exports.deleteCategory = catchAsync(async (req, res, next) => {
     await Category.destroy({ where: { id } })
     response(res, '', 206, 'You are successfully delete category')
 })
-
-exports.getImage = catchAsync(async (req, res, next) => {})
