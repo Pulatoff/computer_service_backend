@@ -161,10 +161,37 @@ exports.searchProducts = catchAsync(async (req, res, next) => {
             return o.product_detail?.price
         })
     )
-
-    results.sort((b, a) => {
-        return a.product_detail.price - b.product_detail.price
-    })
+    if (sort === 'price' || sort === '-price') {
+        if (sort === 'price') {
+            results.sort((b, a) => {
+                return a.product_detail.price - b.product_detail.price
+            })
+        } else {
+            results.sort((a, b) => {
+                return a.product_detail.price - b.product_detail.price
+            })
+        }
+    } else if (sort === 'createdAt' || sort === '-createdAt') {
+        if (sort === 'createdAt') {
+            results.sort((b, a) => {
+                return a.createdAt - b.createdAt
+            })
+        } else {
+            results.sort((a, b) => {
+                return a.createdAt - b.createdAt
+            })
+        }
+    } else if (sort === 'avgRating' || sort === '-avgRating') {
+        if (sort === 'avgRating') {
+            results.sort((b, a) => {
+                return a.avg_rating - b.avg_rating
+            })
+        } else {
+            results.sort((a, b) => {
+                return a.avg_rating - b.avg_rating
+            })
+        }
+    }
 
     response(res, { results, options: { maxPrice: maxPricex } }, 200, 'You are successfully delete product')
 })
