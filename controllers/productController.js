@@ -197,12 +197,11 @@ exports.searchProducts = catchAsync(async (req, res, next) => {
     if (minPrice && maxPrice) {
         results = results.filter((val) => {
             if (+minPrice <= +val.product_detail.price && +maxPrice >= +val.product_detail.price) {
-                console.log(1)
                 return val
             }
         })
     }
-
+    results = results.filter((value, index, self) => index === self.findIndex((t) => t.id === value.id))
     response(res, { results, options: { maxPrice: maxPricex } }, 200, 'You are successfully delete product')
 })
 
