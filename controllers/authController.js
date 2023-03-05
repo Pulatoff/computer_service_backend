@@ -8,6 +8,7 @@ const AppError = require('../utility/appError')
 const catchAsync = require('../utility/catchAsync')
 const response = require('../utility/response')
 const Basket = require('../models/basketsModel')
+const Product = require('../models/productsModel')
 
 const createToken = async ({ id }) => {
     return await jwt.sign({ id }, process.env.JWT_SECRET, {
@@ -62,7 +63,10 @@ exports.login = catchAsync(async (req, res, next) => {
 
     const user = await User.findOne({
         where: { email },
-        include: [{ model: Location, attributes: { exclude: ['userId'] } }, { model: Basket }],
+        include: [
+            { model: Location, attributes: { exclude: ['userId'] } },
+            { model: Basket, include: [{ model: Product }] },
+        ],
     })
 
     if (!user) {
@@ -115,7 +119,7 @@ exports.userSelf = catchAsync(async (req, res, next) => {
     const user = await User.findByPk(id, {
         include: [
             { model: Location, attributes: { exclude: ['userId'] } },
-            { model: Basket, attributes: { exclude: ['userId'] } },
+            { model: Basket, attributes: { exclude: ['userId'] }, include: [{ model: Product }] },
         ],
     })
     response(res, { user: resUserType(user) }, 200, 'You are refresh page')

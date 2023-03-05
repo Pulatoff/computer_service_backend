@@ -10,6 +10,7 @@ const categoryRouter = require('../routes/categoryRouter')
 const auth = require('../routes/userRouter')
 const product = require('../routes/productRoute')
 const serviceRouter = require('../routes/serviceRouter')
+const basketRouter = require('../routes/basketRouter')
 const AppError = require('../utility/appError')
 
 app.use(morgan(process.env.NODE_ENV === 'development' ? 'dev' : 'common'))
@@ -37,6 +38,7 @@ app.use('/api/v1/users', auth)
 app.use('/api/v1/products', product)
 app.use('/api/v1/categories', categoryRouter)
 app.use('/api/v1/services', serviceRouter)
+app.use('/api/v1/baskets', basketRouter)
 
 app.all('*', (req, res, next) => {
     next(new AppError('url not found', 404))

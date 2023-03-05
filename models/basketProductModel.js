@@ -6,7 +6,7 @@ const Product = require('./productsModel')
 const BasketProduct = sequelize.define(
     'basket_products',
     {
-        quantity: { type: DataTypes.TINYINT, allowNull: false, defaultValue: 1 },
+        quantity: { type: DataTypes.INTEGER, allowNull: false, defaultValue: 1 },
     },
     { timestamps: false }
 )
