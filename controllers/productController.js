@@ -119,7 +119,7 @@ exports.deleteProduct = catchAsync(async (req, res, next) => {
 exports.searchProducts = catchAsync(async (req, res, next) => {
     const { search, minPrice, maxPrice, sort } = req.query
     const order = JSON.stringify(sort)
-    const results = []
+    let results = []
     const products = await Product.findAll({
         include: [
             { model: Category },
@@ -161,6 +161,7 @@ exports.searchProducts = catchAsync(async (req, res, next) => {
             return o.product_detail?.price
         })
     )
+
     if (sort === 'price' || sort === '-price') {
         if (sort === 'price') {
             results.sort((b, a) => {
@@ -191,6 +192,15 @@ exports.searchProducts = catchAsync(async (req, res, next) => {
                 return a.avg_rating - b.avg_rating
             })
         }
+    }
+
+    if (minPrice && maxPrice) {
+        results = results.filter((val) => {
+            if (+minPrice <= +val.product_detail.price && +maxPrice >= +val.product_detail.price) {
+                console.log(1)
+                return val
+            }
+        })
     }
 
     response(res, { results, options: { maxPrice: maxPricex } }, 200, 'You are successfully delete product')
