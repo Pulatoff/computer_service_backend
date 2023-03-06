@@ -129,6 +129,7 @@ exports.searchProducts = catchAsync(async (req, res, next) => {
                     exclude: ['images', 'productId'],
                 },
             },
+            { model: Review },
         ],
         where: {
             name: { [Op.like]: '%' + search + '%' },
@@ -150,11 +151,13 @@ exports.searchProducts = catchAsync(async (req, res, next) => {
     products.map((val) => {
         results.push(val)
     })
+
     category.map((val) => {
         val.products.map((val) => {
             results.push(val)
         })
     })
+
     const maxPricex = Math.max.apply(
         Math,
         results.map(function (o) {
