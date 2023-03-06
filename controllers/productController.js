@@ -90,6 +90,8 @@ exports.getOneProduct = catchAsync(async (req, res, next) => {
             exclude: ['image_main', 'categoryId'],
         },
     })
+    product.views = product.views + 1
+    await product.save()
     response(res, { product }, 200, 'You are successfully get product')
 })
 
