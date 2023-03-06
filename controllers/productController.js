@@ -138,7 +138,7 @@ exports.searchProducts = catchAsync(async (req, res, next) => {
             exclude: ['image_main', 'categoryId'],
             include: [],
         },
-        group: ['products.id', 'category.id', 'product_detail.id'],
+        group: ['products.id', 'category.id', 'product_detail.id', 'reviews.id'],
     })
 
     const category = await Category.findAll({
