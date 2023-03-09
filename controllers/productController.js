@@ -77,7 +77,24 @@ exports.getOneProduct = catchAsync(async (req, res, next) => {
     const product = await Product.findByPk(id, {
         include: [
             { model: ProductDetails, attributes: { exclude: ['images', 'productId'] } },
-            { model: Category, include: [{ model: Product, attributes: { exclude: ['image_main', 'categoryId'] } }] },
+            {
+                model: Category,
+                include: [
+                    {
+                        model: Product,
+                        limit: 6,
+                        attributes: { exclude: ['image_main', 'categoryId'] },
+                        include: [
+                            { model: ProductDetails, attributes: { exclude: ['images', 'productId'] } },
+                            {
+                                model: Review,
+                                attributes: { exclude: ['userId', 'productId'] },
+                                include: [{ model: User, attributes: ['username'] }],
+                            },
+                        ],
+                    },
+                ],
+            },
             {
                 model: Review,
 
