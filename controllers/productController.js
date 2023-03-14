@@ -11,7 +11,7 @@ const Category = require('../models/categoriesModel')
 const Review = require('../models/reviewsModel')
 const User = require('../models/userModel')
 const Image = require('../models/imageModel')
-const sequelize = require('sequelize')
+const sequelize = require('../configs/db')
 
 const storage = multer.memoryStorage()
 
@@ -59,7 +59,6 @@ exports.getAllProducts = catchAsync(async (req, res, next) => {
             { model: Category, include: [{ model: Product, attributes: { exclude: ['image_main', 'categoryId'] } }] },
             {
                 model: Review,
-
                 attributes: { exclude: ['userId', 'productId'] },
                 include: [{ model: User, attributes: ['username'] }],
             },
@@ -109,7 +108,13 @@ exports.getOneProduct = catchAsync(async (req, res, next) => {
     })
     product.views = product.views + 1
     await product.save()
-    response(res, { product }, 200, 'You are successfully get product')
+    const products = await Review.findAll({
+        attributes: [[sequelize.fn('COUNT', sequelize.col('reviews.rating')), 'count']],
+        group: ['id'],
+    })
+    // Results will be an empty array and metadata will contain the number of affected rows.
+    console.log(products)
+    response(res, { product, products }, 200, 'You are successfully get product')
 })
 
 exports.updateProduct = catchAsync(async (req, res, next) => {

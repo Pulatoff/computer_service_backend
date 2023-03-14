@@ -1,21 +1,10 @@
 const { Sequelize } = require('sequelize')
 
-const sequelize = new Sequelize(
-    process.env.NODE_ENV === 'production' ? 'service' : 'service_dev',
-    'doadmin',
-    'AVNS_5Lgv70KVPpGWNPXgtKP',
-    {
-        dialect: 'postgres',
-        host: 'main-database-do-user-12917150-0.b.db.ondigitalocean.com',
-        port: 25060,
-        logging: false,
-        ssl: true,
-        dialectOptions: {
-            ssl: {
-                rejectUnauthorized: false,
-            },
-        },
-    }
-)
+const sequelize = new Sequelize('service', 'postgres', 'niyozbek', {
+    dialect: 'postgres',
+    host: 'localhost',
+    port: 5432,
+    logging: false,
+})
 
 module.exports = sequelize
