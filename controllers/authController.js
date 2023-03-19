@@ -10,6 +10,7 @@ const response = require('../utility/response')
 const Basket = require('../models/basketsModel')
 const Product = require('../models/productsModel')
 const Favorite = require('../models/favoriteModel')
+const ProductDetail = require('../models/productDetailsModel')
 
 const createToken = async ({ id }) => {
     return await jwt.sign({ id }, process.env.JWT_SECRET, {
@@ -34,6 +35,7 @@ const resUserType = (user) => {
         username: user.username,
         location: user.location,
         basket: user.basket,
+        favorite: user.favorite,
         createdAt: user.createdAt,
     }
 }
@@ -66,6 +68,7 @@ exports.login = catchAsync(async (req, res, next) => {
         include: [
             { model: Location, attributes: { exclude: ['userId'] } },
             { model: Basket, include: [{ model: Product }] },
+            { model: Favorite, include: [{ model: Product }] },
         ],
     })
 
@@ -80,7 +83,13 @@ exports.login = catchAsync(async (req, res, next) => {
     }
 
     const token = await createToken(user)
-    const newUser = await User.findByPk(user.id, { include: [{ model: Basket, attributes: { exclude: ['userId'] } }] })
+    const newUser = await User.findByPk(user.id, {
+        include: [
+            { model: Location, attributes: { exclude: ['userId'] } },
+            { model: Basket, include: [{ model: Product, include: ProductDetail }] },
+            { model: Favorite, include: [{ model: Product, include: ProductDetail }] },
+        ],
+    })
     sendCookie(res, token)
     response(res, { user: resUserType(newUser) }, 201, 'you successfully sign in')
 })
@@ -119,7 +128,12 @@ exports.userSelf = catchAsync(async (req, res, next) => {
     const user = await User.findByPk(id, {
         include: [
             { model: Location, attributes: { exclude: ['userId'] } },
-            { model: Basket, attributes: { exclude: ['userId'] }, include: [{ model: Product }] },
+            {
+                model: Basket,
+                attributes: { exclude: ['userId'] },
+                include: [{ model: Product, include: ProductDetail }],
+            },
+            { model: Favorite, include: [{ model: Product, include: ProductDetail }] },
         ],
     })
     response(res, { user: resUserType(user) }, 200, 'You are refresh page')
