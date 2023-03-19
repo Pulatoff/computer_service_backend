@@ -9,6 +9,7 @@ const catchAsync = require('../utility/catchAsync')
 const response = require('../utility/response')
 const Basket = require('../models/basketsModel')
 const Product = require('../models/productsModel')
+const Favorite = require('../models/favoriteModel')
 
 const createToken = async ({ id }) => {
     return await jwt.sign({ id }, process.env.JWT_SECRET, {
@@ -48,7 +49,8 @@ exports.signUp = catchAsync(async (req, res, next) => {
     }
 
     const user = await User.create({ username, email, password })
-    const basket = await Basket.create({ userId: user.id })
+    await Basket.create({ userId: user.id })
+    await Favorite.create({ userId: user.id })
     const token = await createToken(user)
     sendCookie(res, token)
     response(res, { user: resUserType(user) }, 201, 'you successfully sign up')
@@ -56,11 +58,9 @@ exports.signUp = catchAsync(async (req, res, next) => {
 
 exports.login = catchAsync(async (req, res, next) => {
     const { email, password } = req.body
-
     if (!email || !password) {
         return next(new AppError('Please provide email and password', 400))
     }
-
     const user = await User.findOne({
         where: { email },
         include: [

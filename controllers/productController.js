@@ -12,6 +12,8 @@ const Review = require('../models/reviewsModel')
 const User = require('../models/userModel')
 const Image = require('../models/imageModel')
 const sequelize = require('../configs/db')
+const Favorite = require('../models/favoriteModel')
+const FavoriteProduct = require('../models/favoriteProductModel')
 
 const storage = multer.memoryStorage()
 
@@ -255,4 +257,12 @@ exports.sendImage = catchAsync(async (req, res, next) => {
     res.set('Content-Type', 'image/jpeg')
 
     readStream.pipe(res)
+})
+
+exports.addToFavorite = catchAsync(async (req, res, next) => {
+    const { productId } = req.body
+    const userId = req.user.id
+    const favorite = await Favorite.findOne({ where: { userId } })
+    await FavoriteProduct.create({ productId, favoriteId: favorite.id })
+    response(res, '', 201, 'You are successfully added product to favorites')
 })
