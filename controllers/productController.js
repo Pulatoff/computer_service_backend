@@ -43,7 +43,7 @@ exports.addProduct = catchAsync(async (req, res, next) => {
         name,
         image_main,
         categoryId: category_id,
-        configuration_id,
+        configurationId: configuration_id,
     })
 
     await ProductDetails.create({
