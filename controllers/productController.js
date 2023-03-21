@@ -22,7 +22,7 @@ exports.upload = multer({
 }).array('imageFiles', 4)
 
 exports.addProduct = catchAsync(async (req, res, next) => {
-    const { name, price, description, colors, condition, specifications, category_id } = req.body
+    const { name, price, description, colors, condition, specifications, category_id, configuration_id } = req.body
 
     const image_main = crypto.randomUUID().toString('binary') + '.' + req.files[0].mimetype.split('/')[1]
     await Image.create({ image_name: image_main, image: req.files[0].buffer })
@@ -38,7 +38,13 @@ exports.addProduct = catchAsync(async (req, res, next) => {
         images_name.push(image)
     }
 
-    const product = await Product.create({ image_url: file_url, name, image_main, categoryId: category_id })
+    const product = await Product.create({
+        image_url: file_url,
+        name,
+        image_main,
+        categoryId: category_id,
+        configuration_id,
+    })
 
     await ProductDetails.create({
         price,
