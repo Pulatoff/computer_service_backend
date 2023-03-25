@@ -149,8 +149,9 @@ exports.deleteProduct = catchAsync(async (req, res, next) => {
 })
 
 exports.searchProducts = catchAsync(async (req, res, next) => {
-    const { search, minPrice, maxPrice, sort } = req.query
-    const order = JSON.stringify(sort)
+    let { search, minPrice, maxPrice, sort, size, page } = req.query
+    size = size || 10
+    page = page || 1
     let results = []
     const products = await Product.findAll({
         include: [
@@ -236,7 +237,11 @@ exports.searchProducts = catchAsync(async (req, res, next) => {
             }
         })
     }
+
     results = results.filter((value, index, self) => index === self.findIndex((t) => t.id === value.id))
+
+    results = paginate(results, +size, +page)
+
     response(res, { results, options: { maxPrice: maxPricex } }, 200, 'You are successfully delete product')
 })
 
@@ -274,3 +279,7 @@ exports.addToFavorite = catchAsync(async (req, res, next) => {
     await FavoriteProduct.create({ productId, favoriteId: favorite.id })
     response(res, '', 201, 'You are successfully added product to favorites')
 })
+
+function paginate(array, pageSize = 1, pageNumber = 1) {
+    return array.slice((pageNumber - 1) * pageSize, pageNumber * pageSize)
+}
