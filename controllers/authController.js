@@ -55,7 +55,7 @@ exports.signUp = catchAsync(async (req, res, next) => {
     await Favorite.create({ userId: user.id })
     const token = await createToken(user)
     sendCookie(res, token)
-    response(res, { user: resUserType(user) }, 201, 'you successfully sign up')
+    response(res, { user: resUserType(user), accessToken: token }, 201, 'you successfully sign up')
 })
 
 exports.login = catchAsync(async (req, res, next) => {
@@ -91,7 +91,7 @@ exports.login = catchAsync(async (req, res, next) => {
         ],
     })
     sendCookie(res, token)
-    response(res, { user: resUserType(newUser) }, 201, 'you successfully sign in')
+    response(res, { user: resUserType(newUser), accessToken: token }, 201, 'you successfully sign in')
 })
 
 exports.protect = catchAsync(async (req, res, next) => {
