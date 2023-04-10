@@ -21,18 +21,20 @@ exports.upload = multer({
     storage,
 }).array('imageFiles', 4)
 
+exports.uploadImageMulter = multer({ storage }).single('image')
+
 exports.addProduct = catchAsync(async (req, res, next) => {
     const { name, price, description, colors, condition, specifications, category_id, configuration_id } = req.body
 
     const image_main = crypto.randomUUID().toString('binary') + '.' + req.files[0].mimetype.split('/')[1]
     await Image.create({ image_name: image_main, image: req.files[0].buffer })
-    const file_url = process.env.HOST_URL + '/api/v1/products/images/' + image_main
+    const file_url = `${req.protocol}://${req.get('host')}/api/v1/products/images/${image_main}`
     const images_name = []
     const image_urls = []
     for (let i = 1; i < req.files.length; i++) {
         const image = crypto.randomUUID().toString('binary') + '.' + req.files[0].mimetype.split('/')[i]
         await Image.create({ image_name: image, image: req.files[i].buffer })
-        const file_url = process.env.HOST_URL + '/api/v1/products/images/' + image
+        const file_url = `${req.protocol}://${req.get('host')}/api/v1/products/images/${image}`
 
         image_urls.push(file_url)
         images_name.push(image)
@@ -278,6 +280,17 @@ exports.addToFavorite = catchAsync(async (req, res, next) => {
     const favorite = await Favorite.findOne({ where: { userId } })
     await FavoriteProduct.create({ productId, favoriteId: favorite.id })
     response(res, '', 201, 'You are successfully added product to favorites')
+})
+
+exports.updateUploadImage = catchAsync(async (req, res, next) => {
+    const file = req.file
+    const id = req.params.id
+    const product = await Product.findByPk(id)
+
+    const image = await Image.findOne({ where: { image_name: product.image_main } })
+    image.image = req.file.buffer
+    await image.save()
+    response(res, {}, 203, 'You are successfully updated photo')
 })
 
 function paginate(array, pageSize = 1, pageNumber = 1) {
