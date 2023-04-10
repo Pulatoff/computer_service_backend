@@ -15,7 +15,7 @@ exports.addService = catchAsync(async (req, res, next) => {
     const filename = crypto.randomUUID() + '.' + req.file.mimetype.split('/')[1]
     await Image.create({ image_name: filename, image: req.file.buffer })
 
-    const image_url = `/api/v1/products/images/${filename}`
+    const image_url = `${req.protocol}://${req.get('host')}/api/v1/products/images/${filename}`
 
     const service = await Service.create({
         name,
@@ -65,5 +65,6 @@ exports.updateImageService = catchAsync(async (req, res, next) => {
     const service = await Service.findByPk(id)
     const image = await Image.findOne({ where: { image_name: service.image } })
     image.image = file.buffer
+    await image.save()
     response(res, '', 201, 'You are successfully update image')
 })
