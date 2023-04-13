@@ -278,8 +278,18 @@ exports.addToFavorite = catchAsync(async (req, res, next) => {
     const { productId } = req.body
     const userId = req.user.id
     const favorite = await Favorite.findOne({ where: { userId } })
+    const oldCheck = await FavoriteProduct.findOne({ where: { productId, favoriteId: favorite.id } })
+    if (!oldCheck) next(new AppError('This product allready in favorite product', 400))
     await FavoriteProduct.create({ productId, favoriteId: favorite.id })
     response(res, '', 201, 'You are successfully added product to favorites')
+})
+
+exports.deleteFavorites = catchAsync(async (req, res, next) => {
+    const { productId } = req.body
+    const userId = req.user.id
+    const favorite = await Favorite.findOne({ where: { userId } })
+    await Favorite.destroy({ where: { productId, favoriteId: favorite.id } })
+    response(res, '', 200, 'You are successfully delete in favorites')
 })
 
 exports.updateUploadImage = catchAsync(async (req, res, next) => {
