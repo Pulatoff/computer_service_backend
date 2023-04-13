@@ -4,7 +4,7 @@ const auth = require('../controllers/authController')
 
 router.route('/').post(controller.upload, controller.addProduct).get(controller.getAllProducts)
 router.route('/search').get(controller.searchProducts)
-router.route('/favorites').post(auth.protect, controller.addToFavorite)
+router.route('/favorites').post(auth.protect, controller.addToFavorite).delete(auth.protect, controller.deleteFavorites)
 router.route('/images/:image_name').get(controller.sendImage)
 router.route('/update/image/:id').post(controller.uploadImageMulter, controller.updateUploadImage)
 router.route('/:id').get(controller.getOneProduct).patch(controller.updateProduct).delete(controller.deleteProduct)
