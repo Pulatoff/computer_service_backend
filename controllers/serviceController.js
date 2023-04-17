@@ -42,12 +42,14 @@ exports.getOneService = catchAsync(async (req, res, next) => {
 })
 
 exports.updateService = catchAsync(async (req, res, next) => {
-    const { name, features, resolve_problems } = req.body
+    const { name, features, resolve_problems, description, phone } = req.body
     const id = req.params.id
     const service = await Service.findByPk(id)
     service.name = name || service.name
     service.features = features || service.features
     service.resolve_problems = resolve_problems || service.resolve_problems
+    service.description = description || service.description
+    service.phone = phone || service.phone
 
     await service.save()
     response(res, { service }, 203, 'You are successfully update service')
