@@ -128,7 +128,7 @@ exports.getOneProduct = catchAsync(async (req, res, next) => {
 })
 
 exports.updateProduct = catchAsync(async (req, res, next) => {
-    let { name, price, description, colors, condition, specifications } = req.body
+    let { name, price, description, colors, condition, specifications, category_id } = req.body
     const id = req.params.id
     const product = await Product.findByPk(id, { include: ProductDetails })
     const product_detail = await ProductDetails.findOne({ where: { productId: product.id } })
@@ -139,6 +139,7 @@ exports.updateProduct = catchAsync(async (req, res, next) => {
     product_detail.colors = colors || product_detail.colors
     product_detail.condition = condition || product_detail.condition
     product_detail.specifications = specifications || product_detail.specifications
+    product.categoryId = category_id || product.categoryId
     await product.save()
     await product_detail.save()
     response(res, '', 203, 'You are successfully update product')
