@@ -132,7 +132,7 @@ exports.updateProduct = catchAsync(async (req, res, next) => {
     const id = req.params.id
     const product = await Product.findByPk(id, { include: ProductDetails })
     const product_detail = await ProductDetails.findOne({ where: { productId: product.id } })
-    if (!product) next(new AppError('Product not found', 404))
+    if (!product) next(new AppError('Product not found', 400))
     product.name = name || product.name
     product_detail.price = price || product_detail.price
     product_detail.description = description || product_detail.description
