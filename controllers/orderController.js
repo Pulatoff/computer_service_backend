@@ -16,7 +16,11 @@ exports.addOrder = CatchError(async (req, res, next) => {
 })
 
 exports.getAllOrders = CatchError(async (req, res, next) => {
-    const orders = await Order.findAll({ where: { status: 0 }, include: [{ model: Product, include: ProductDetail }] })
+    const orders = await Order.findAll({
+        where: { status: 0 },
+        include: [{ model: Product, include: ProductDetail }],
+        order: [['createdAt', 'DESC']],
+    })
     response(res, { orders }, 200, 'You are successfully get order products')
 })
 
