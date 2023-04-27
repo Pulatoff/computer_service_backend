@@ -29,3 +29,9 @@ exports.getAllSwapers = CatchError(async (req, res, next) => {
     const swapers = await Swaper.findAll({ limit: 10 })
     response(res, { swapers }, 200, 'You are successfully get swapers')
 })
+
+exports.deleteSwaper = CatchError(async (req, res, next) => {
+    const id = req.params.id
+    await Swaper.destroy({ where: { id } })
+    response(res, {}, 206, 'You are successfully delete swapers')
+})
