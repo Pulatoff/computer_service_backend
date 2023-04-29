@@ -13,7 +13,6 @@ exports.upload = multer({
 exports.addSwaper = CatchError(async (req, res, next) => {
     const { title, productId } = req.body
     const image = req.file
-    console.log(req.file)
     const image_name = crypto.randomUUID().toString('binary') + '.' + image.mimetype.split('/')[1]
     await Swaper.create({
         title,
