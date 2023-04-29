@@ -1,7 +1,7 @@
 const About = require('../models/aboutModel')
 const Image = require('../models/imageModel')
 const multer = require('multer')
-
+const crypto = require('crypto')
 const catchAsync = require('../utility/catchAsync')
 const response = require('../utility/response')
 
@@ -21,4 +21,9 @@ exports.addAbout = catchAsync(async (req, res, next) => {
     }
     await About.create({ text, images: imageUrls })
     response(res, {}, 201, 'You are successfully add data')
+})
+
+exports.getAbout = catchAsync(async (req, res, next) => {
+    const about = await About.findOne({ order: [['id', 'DESC']] })
+    response(res, { about }, 201, 'You are successfully get data')
 })
