@@ -14,6 +14,7 @@ const configurationRouter = require('../routes/configurationRoute')
 const OrderRouter = require('../routes/orderRoutes')
 const SwaperRouter = require('../routes/swaperRouter')
 const basketRouter = require('../routes/basketRouter')
+const spinerRouter = require('../routes/spinerRouter')
 const AppError = require('../utility/appError')
 
 app.use(morgan(process.env.NODE_ENV === 'development' ? 'dev' : 'common'))
@@ -46,6 +47,7 @@ app.use('/api/v1/baskets', basketRouter)
 app.use('/api/v1/configurations', configurationRouter)
 app.use('/api/v1/orders', OrderRouter)
 app.use('/api/v1/swapers', SwaperRouter)
+app.use('/api/v1/spiners', spinerRouter)
 
 app.all('*', (req, res, next) => {
     next(new AppError('url not found', 404))
