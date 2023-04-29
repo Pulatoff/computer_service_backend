@@ -14,6 +14,7 @@ exports.upload = multer({ storage }).fields([
 
 exports.addSpiner = CatchAsync(async (req, res, next) => {
     const { firstText, secondText, thirdText } = req.body
+    console.log(req.files, req.body)
     const filenameBackground = crypto.randomUUID() + '.' + req.files.backgroundImage[0].mimetype.split('/')[1]
     const filename = crypto.randomUUID() + '.' + req.files.image[0].mimetype.split('/')[1]
 
