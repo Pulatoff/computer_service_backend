@@ -11,6 +11,7 @@ router.route('/self').get(auth.protect, auth.userSelf)
 router.route('/logout').get(auth.logout)
 
 router.route('/location').post(controller.addLocation)
+router.route('/update').post(auth.changePassword)
 
 router.route('/:id').get(controller.getOneUser).patch(controller.updateUser).delete(controller.deleteUser)
 

@@ -11,6 +11,7 @@ const Basket = require('../models/basketsModel')
 const Product = require('../models/productsModel')
 const Favorite = require('../models/favoriteModel')
 const ProductDetail = require('../models/productDetailsModel')
+const sendGrid = require('../utility/sendGrid')
 
 const createToken = async ({ id }) => {
     return await jwt.sign({ id }, process.env.JWT_SECRET, {
@@ -76,9 +77,7 @@ exports.login = catchAsync(async (req, res, next) => {
         return next(new AppError('User not found', 404))
     }
 
-    const shart = await bcrypt.compare(password, user.password)
-
-    if (!shart) {
+    if (password !== user.password) {
         return next(new AppError('Incorrect password', 401))
     }
 
@@ -92,6 +91,25 @@ exports.login = catchAsync(async (req, res, next) => {
     })
     sendCookie(res, token)
     response(res, { user: resUserType(newUser), accessToken: token }, 201, 'you successfully sign in')
+})
+
+exports.changePassword = catchAsync(async (req, res, next) => {
+    const { newPassword, oldPassword, newPasswordConfirm } = req.body
+    const user = User.findOne({ where: { password: oldPassword } })
+    if (!user) {
+        return next(new AppError(''))
+    }
+    if (oldPassword !== newPasswordConfirm) {
+        return next(new AppError('password not the same', 401))
+    }
+
+    if (user.password !== oldPassword) {
+        return next(new AppError('Incorrect password', 401))
+    }
+
+    const code = digitNumber(6)
+    await sendGrid('', code)
+    response(res, { code }, 200, 'You are successfully send code')
 })
 
 exports.protect = catchAsync(async (req, res, next) => {
@@ -156,4 +174,14 @@ exports.role = (roles) => {
             next(new AppError(error.message, 404))
         }
     }
+}
+
+function digitNumber(count) {
+    var chars = '0123456789'.split('')
+    var result = ''
+    for (var i = 0; i < count; i++) {
+        var x = Math.floor(Math.random() * chars.length)
+        result += chars[x]
+    }
+    return result
 }

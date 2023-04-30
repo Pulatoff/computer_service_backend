@@ -34,9 +34,4 @@ const User = sequelize.define(
     { timestamps: true, createdAt: true, updatedAt: false }
 )
 
-User.beforeCreate(async (user, options) => {
-    const password = await hashPassword(user.password)
-    user.password = password
-})
-
 module.exports = User
