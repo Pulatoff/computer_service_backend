@@ -12,6 +12,7 @@ router.route('/logout').get(auth.logout)
 
 router.route('/location').post(controller.addLocation)
 router.route('/update').post(auth.changePassword)
+router.route('/code').post(auth.checkCode)
 
 router.route('/:id').get(controller.getOneUser).patch(controller.updateUser).delete(controller.deleteUser)
 

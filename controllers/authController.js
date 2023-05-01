@@ -111,8 +111,21 @@ exports.changePassword = catchAsync(async (req, res, next) => {
 
     await sendGrid('', code)
     user.code = code
+    user.newPassword = newPassword
     await user.save()
     response(res, { code }, 200, 'You are successfully send code')
+})
+
+exports.checkCode = catchAsync(async (req, res, next) => {
+    const code = req.body.code
+    const user = await User.findOne({ where: { code } })
+    if (!user) {
+        return next(new AppError('You are invalid code', 400))
+    }
+
+    user.password = user.newPassword
+    await user.save()
+    response(res, {}, 200, 'You are successfully send code')
 })
 
 exports.protect = catchAsync(async (req, res, next) => {
