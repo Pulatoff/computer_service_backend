@@ -4,7 +4,7 @@ sendGrid.setApiKey('SG.zjvUZltaRzG7TwYJcePCVg._dJ6etM2XXofAnBAwv2LAuvwwupX8EilD6
 
 const sendMessageToGmail = async (to, code) => {
     const message = {
-        to: 'pulatov.niyozbek12@gmail.com',
+        to: 'Muxitdinovss@gmail.com',
         from: 'niyozbek12aws@gmail.com',
         subject: 'Parol uzgratirishni tasdiqlash',
         text: code,
