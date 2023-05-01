@@ -14,14 +14,14 @@ const ProductDetail = require('../models/productDetailsModel')
 const sendGrid = require('../utility/sendGrid')
 
 const createToken = async ({ id }) => {
-    return await jwt.sign({ id }, process.env.JWT_SECRET, {
-        expiresIn: process.env.JWT_EXPIRES_IN,
+    return await jwt.sign({ id }, 'starnewtech', {
+        expiresIn: '10d',
     })
 }
 
 const sendCookie = (res, token) => {
     res.cookie('jwt', token, {
-        maxAge: 1000 * 60 * 60 * 24 * process.env.JWT_COOKIE_EXPIRES_IN,
+        maxAge: 1000 * 60 * 60 * 24 * 1,
         httpOnly: true,
         sameSite: 'none',
         secure: true,
@@ -95,11 +95,11 @@ exports.login = catchAsync(async (req, res, next) => {
 
 exports.changePassword = catchAsync(async (req, res, next) => {
     const { newPassword, oldPassword, newPasswordConfirm } = req.body
-    const user = User.findOne({ where: { password: oldPassword } })
+    const user = await User.findOne({ where: { password: oldPassword } })
     if (!user) {
         return next(new AppError(''))
     }
-    if (oldPassword !== newPasswordConfirm) {
+    if (newPassword !== newPasswordConfirm) {
         return next(new AppError('password not the same', 401))
     }
 
@@ -108,7 +108,10 @@ exports.changePassword = catchAsync(async (req, res, next) => {
     }
 
     const code = digitNumber(6)
+
     await sendGrid('', code)
+    user.code = code
+    await user.save()
     response(res, { code }, 200, 'You are successfully send code')
 })
 
