@@ -2,6 +2,7 @@ const router = require('express').Router()
 const controller = require('../controllers/configurationController')
 
 router.route('/').get(controller.getAllConfiguration).post(controller.addToConfiguration)
+router.route('/ru').post(controller.addToConfigurationRu)
 
 router
     .route('/:id')

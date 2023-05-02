@@ -1,4 +1,5 @@
 const Configuration = require('../models/configurationModel')
+const ConfigurationRu = require('../models/configurationRuModel')
 const Product = require('../models/productsModel')
 const ProductDetail = require('../models/productDetailsModel')
 // utils
@@ -13,7 +14,7 @@ exports.addToConfiguration = catchAsync(async (req, res, next) => {
 
 exports.getAllConfiguration = catchAsync(async (req, res, next) => {
     const configurations = await Configuration.findAll({
-        include: [{ model: Product, include: [{ model: ProductDetail }] }],
+        include: [{ model: Product, include: [{ model: ProductDetail }] }, { model: ConfigurationRu }],
     })
     response(res, { configurations }, 200, 'You are successfully get configurations')
 })
@@ -39,4 +40,11 @@ exports.deleteConfiguration = catchAsync(async (req, res, next) => {
     const id = req.params.id
     await Configuration.destroy({ where: { id } })
     response(res, {}, 206, 'You are successfully delete configuration')
+})
+
+exports.addToConfigurationRu = catchAsync(async (req, res, next) => {
+    const type = req.body.type
+    const configurationId = req.body.configurationId
+    await ConfigurationRu.create({ type, configurationId })
+    response(res, {}, 201, 'You are successfully create config type')
 })

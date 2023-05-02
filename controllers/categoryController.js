@@ -3,6 +3,7 @@ const Category = require('../models/categoriesModel')
 const Product = require('../models/productsModel')
 const ProductDetails = require('../models/productDetailsModel')
 const Review = require('../models/reviewsModel')
+const CategoryRu = require('../models/categoriesRuModel')
 const User = require('../models/userModel')
 // utils
 const AppError = require('../utility/appError')
@@ -24,6 +25,7 @@ exports.getAllCategories = catchAsync(async (req, res, next) => {
                     },
                 ],
             },
+            { model: CategoryRu },
         ],
     })
     response(res, { categories }, 200, 'you are get categories')
@@ -59,4 +61,11 @@ exports.deleteCategory = catchAsync(async (req, res, next) => {
     const id = req.params.id
     await Category.destroy({ where: { id } })
     response(res, '', 206, 'You are successfully delete category')
+})
+
+exports.addCategoryRu = catchAsync(async (req, res, next) => {
+    const name = req.body.name
+    const categoryId = req.body.categoryId
+    await CategoryRu.create({ name, categoryId })
+    response(res, '', 201, `You create category by name: ${name}`)
 })

@@ -2,6 +2,8 @@ const AppError = require('../utility/appError')
 const catchAsync = require('../utility/catchAsync')
 const Product = require('../models/productsModel')
 const ProductDetails = require('../models/productDetailsModel')
+const ProductRu = require('../models/productsRuModel')
+const ProductDetailsRu = require('../models/productDetailsRuModel')
 const response = require('../utility/response')
 const multer = require('multer')
 const crypto = require('crypto')
@@ -65,13 +67,14 @@ exports.addProduct = catchAsync(async (req, res, next) => {
 exports.getAllProducts = catchAsync(async (req, res, next) => {
     const products = await Product.findAll({
         include: [
-            { model: ProductDetails, attributes: { exclude: ['images', 'productId'] } },
+            { model: ProductDetails, attributes: { exclude: ['images', 'productId'] }, include: ProductDetailsRu },
             { model: Category, include: [{ model: Product, attributes: { exclude: ['image_main', 'categoryId'] } }] },
             {
                 model: Review,
                 attributes: { exclude: ['userId', 'productId'] },
                 include: [{ model: User, attributes: ['username'] }],
             },
+            { model: ProductRu },
         ],
 
         attributes: {
@@ -303,6 +306,20 @@ exports.updateUploadImage = catchAsync(async (req, res, next) => {
     image.image = req.file.buffer
     await image.save()
     response(res, {}, 203, 'You are successfully updated photo')
+})
+
+exports.addProductRu = catchAsync(async (req, res, next) => {
+    const { description, colors, specifications, name, productId } = req.body
+    const product = await Product.findByPk(productId, { include: [{ model: ProductDetails }] })
+    await ProductRu.create({ name, productId })
+    const datail = await ProductDetailsRu.create({
+        description,
+        colors,
+        specifications,
+        productDetailId: product.product_detail.id,
+    })
+
+    response(res, { datail }, 201, `You are successfully created product by id: ${product.id}`)
 })
 
 function paginate(array, pageSize = 1, pageNumber = 1) {

@@ -3,6 +3,7 @@ const controller = require('../controllers/productController')
 const auth = require('../controllers/authController')
 
 router.route('/').post(controller.upload, controller.addProduct).get(controller.getAllProducts)
+router.route('/ru').post(controller.addProductRu)
 router.route('/search').get(controller.searchProducts)
 router.route('/favorites').post(auth.protect, controller.addToFavorite).delete(auth.protect, controller.deleteFavorites)
 router.route('/images/:image_name').get(controller.sendImage)
