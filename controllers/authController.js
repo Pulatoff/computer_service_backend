@@ -97,7 +97,7 @@ exports.changePassword = catchAsync(async (req, res, next) => {
     const { newPassword, oldPassword, newPasswordConfirm } = req.body
     const user = await User.findOne({ where: { password: oldPassword } })
     if (!user) {
-        return next(new AppError(''))
+        return next(new AppError('wrong password'))
     }
     if (newPassword !== newPasswordConfirm) {
         return next(new AppError('password not the same', 401))

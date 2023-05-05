@@ -1,11 +1,11 @@
 const sendGrid = require('@sendgrid/mail')
 
-sendGrid.setApiKey('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')
+sendGrid.setApiKey(process.env.SENDGRID_API_KEY)
 
 const sendMessageToGmail = async (to, code) => {
     const message = {
         to: 'Muxitdinovss@gmail.com',
-        from: 'niyozbek12aws@gmail.com',
+        from: 'niyozbekpulatov123@gmail.com',
         subject: 'Parol uzgratirishni tasdiqlash',
         text: code,
     }
