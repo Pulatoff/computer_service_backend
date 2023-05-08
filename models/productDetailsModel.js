@@ -11,9 +11,27 @@ const ProductDetail = sequelize.define(
         description: { type: DataTypes.TEXT, allowNull: false },
         colors: { type: DataTypes.STRING, defaultValue: 'black' },
         condition: { type: DataTypes.STRING, allowNull: false },
-        images: { type: DataTypes.ARRAY(DataTypes.STRING), allowNull: false },
+        images: {
+            type: DataTypes.TEXT,
+            get() {
+                return this.getDataValue('images').split(';')
+            },
+            set(val) {
+                this.setDataValue('images', val.join(';'))
+            },
+            allowNull: false,
+        },
         specifications: { type: DataTypes.JSON, allowNull: true },
-        image_urls: { type: DataTypes.ARRAY(DataTypes.TEXT), allowNull: false },
+        image_urls: {
+            type: DataTypes.TEXT,
+            get() {
+                return this.getDataValue('image_urls').split(';')
+            },
+            set(val) {
+                this.setDataValue('image_urls', val.join(';'))
+            },
+            allowNull: false,
+        },
     },
     { timestamps: true, createdAt: true, updatedAt: false }
 )
