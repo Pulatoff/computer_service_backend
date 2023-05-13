@@ -10,23 +10,11 @@ const User = sequelize.define(
         username: {
             type: DataTypes.STRING,
             allowNull: false,
-            unique: true,
-            validate: { isAlphanumeric: true, len: [3, 20] },
         },
-        email: { type: DataTypes.STRING, allowNull: false, unique: true, validate: { isEmail: true }, lowercase: true },
+        email: { type: DataTypes.STRING, allowNull: false, lowercase: true },
         password: {
             type: DataTypes.STRING,
             allowNull: false,
-            validate: {
-                notEmpty: true,
-                min: 8,
-                max: 20,
-                strongPass(value) {
-                    if (!validator.isStrongPassword(value)) {
-                        throw new Error('Password is not strong enough')
-                    }
-                },
-            },
         },
         role: { type: DataTypes.STRING, defaultValue: 'user' },
         activ: { type: DataTypes.BOOLEAN, defaultValue: true },
