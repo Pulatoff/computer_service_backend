@@ -34,7 +34,7 @@ exports.addOrder = CatchError(async (req, res, next) => {
         await OrderProduct.create({ orderId: order.id, productId: products[i].id, amount: products[i].amount })
     }
     const text = `
-        telefon nomeri: ${phone};
+        telefon nomeri: ${phone_number};
         narxi: ${amount};
         ism sharifi: ${full_name};
         PRODUCTLAR: ${JSON.stringify(products)};
