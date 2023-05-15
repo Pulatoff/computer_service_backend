@@ -11,7 +11,7 @@ const sendMessageToGmail = async (to, text) => {
     const message = {
         to: 'Muxitdinovss@gmail.com',
         from: 'niyozbekpulatov123@gmail.com',
-        subject: 'Parol uzgratirishni tasdiqlash',
+        subject: 'Saytdan zakaz keldi',
         text,
     }
 
