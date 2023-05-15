@@ -268,14 +268,15 @@ exports.addReview = catchAsync(async (req, res, next) => {
 exports.sendImage = catchAsync(async (req, res, next) => {
     const image_name = req.params.image_name
     const imageOption = await Image.findOne({ where: { image_name } })
+    if (imageOption?.image) {
+        const readStream = new stream.PassThrough()
+        readStream.end(imageOption.image)
 
-    const readStream = new stream.PassThrough()
-    readStream.end(imageOption.image)
+        res.set('Content-disposition', 'attachment; filename=' + imageOption.image_name)
+        res.set('Content-Type', 'image/jpeg')
 
-    res.set('Content-disposition', 'attachment; filename=' + imageOption.image_name)
-    res.set('Content-Type', 'image/jpeg')
-
-    readStream.pipe(res)
+        readStream.pipe(res)
+    }
 })
 
 exports.addToFavorite = catchAsync(async (req, res, next) => {
