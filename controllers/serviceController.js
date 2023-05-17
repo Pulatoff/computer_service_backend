@@ -31,7 +31,7 @@ exports.addService = catchAsync(async (req, res, next) => {
 })
 
 exports.getServices = catchAsync(async (req, res, next) => {
-    const services = await Service.findAll({ limit: 6 })
+    const services = await Service.findAll()
     response(res, { services }, 200, 'You are successfully get services')
 })
 

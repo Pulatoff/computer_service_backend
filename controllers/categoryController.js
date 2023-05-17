@@ -12,11 +12,10 @@ const response = require('../utility/response')
 
 exports.getAllCategories = catchAsync(async (req, res, next) => {
     const categories = await Category.findAll({
-        limit: 10,
         include: [
             {
                 model: Product,
-                limit: 10,
+
                 include: [
                     { model: ProductDetails },
                     {
