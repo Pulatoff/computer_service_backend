@@ -12,7 +12,7 @@ const sendMessageToGmail = async (to, text) => {
         to: 'Muxitdinovss@gmail.com',
         from: 'niyozbekpulatov123@gmail.com',
         subject: 'Saytdan zakaz keldi',
-        html,
+        html: text,
     }
 
     try {
