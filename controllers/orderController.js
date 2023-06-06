@@ -9,8 +9,8 @@ const sendGrid = require('@sendgrid/mail')
 sendGrid.setApiKey(process.env.SENDGRID_API_KEY)
 const sendMessageToGmail = async (to, text) => {
     const message = {
-        to: 'Muxitdinovss@gmail.com',
-        from: 'niyozbekpulatov123@gmail.com',
+        to: process.env.SENDGRID_API_EMAIL,
+        from: process.env.SENDGRID_API_EMAIL_FROM,
         subject: 'Saytdan zakaz keldi',
         html: text,
     }
