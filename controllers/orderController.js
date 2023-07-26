@@ -2,38 +2,42 @@ const Order = require('../models/orderModel')
 const OrderProduct = require('../models/orderProductModel')
 const Product = require('../models/productsModel')
 const ProductDetail = require('../models/productDetailsModel')
+const Transaction = require('../models/transactionsModel')
 const CatchError = require('../utility/catchAsync')
 const response = require('../utility/response')
-const sendGrid = require('@sendgrid/mail')
-
-sendGrid.setApiKey(process.env.SENDGRID_API_KEY)
-const sendMessageToGmail = async (to, text) => {
-    const message = {
-        to: process.env.SENDGRID_API_EMAIL,
-        from: process.env.SENDGRID_API_EMAIL_FROM,
-        subject: 'Saytdan zakaz keldi',
-        html: text,
-    }
-
-    try {
-        await sendGrid.send(message)
-    } catch (error) {
-        console.error(error)
-
-        if (error.response) {
-            console.error(error.response.body)
-        }
-    }
-}
+//gateways
+const { callMYUZCARD } = require('../gateways/payment')
+const AppError = require('../utility/appError')
 
 exports.addOrder = CatchError(async (req, res, next) => {
-    const { location, comment, amount, phone_number, full_name, products, text } = req.body
+    const { location, comment, amount, phone_number, full_name, products, payment_items } = req.body
     const order = await Order.create({ location, amount, comment, phone_number, full_name, products })
 
     for (let i = 0; i < products.length; i++) {
         await OrderProduct.create({ orderId: order.id, productId: products[i].id, amount: products[i].amount })
     }
-    await sendMessageToGmail('', text)
+
+    const transaction = await Transaction.create({ amount, order_id: order.id })
+
+    const { result, error } = await callMYUZCARD(
+        'POST',
+        {
+            amount,
+            cardNumber: payment_items.card_number,
+            expireDate: payment_items.expire_date,
+            extraId: transaction.id,
+        },
+        '/Payment/paymentWithoutRegistration'
+    )
+
+    if (error) {
+        next(new AppError(error.errorMessage, 400))
+    }
+
+    transaction.transaction_id = result.transactionId
+    transaction.session = result.session
+    await transaction.save()
+
     response(res, '', 201, 'You are successfully order products')
 })
 

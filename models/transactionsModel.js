@@ -7,7 +7,7 @@ const Transaction = sequelize.define(
     {
         id: { type: DataTypes.BIGINT, primaryKey: true, autoIncrement: true },
         amount: { type: DataTypes.INTEGER, allowNull: false },
-        session: { type: DataTypes.INTEGER, allowNull: false },
+        session: { type: DataTypes.INTEGER, allowNull: false, defaultValue: 0 },
         transaction_id: { type: DataTypes.INTEGER, allowNull: false },
         cancel_at: { type: DataTypes.DATE, allowNull: true },
         payment_status: { type: DataTypes.STRING, allowNull: false, defaultValue: 'pendingPayment' },
