@@ -12,6 +12,7 @@ const Order = sequelize.define(
         phone_number: { type: DataTypes.STRING, allowNull: false },
         full_name: { type: DataTypes.TEXT },
         status: { type: DataTypes.INTEGER, allowNull: false, defaultValue: 0 },
+        payment_status: { type: DataTypes.STRING, allowNull: false, defaultValue: 'new' },
     },
     { timestamps: true, createdAt: true, updatedAt: false }
 )
