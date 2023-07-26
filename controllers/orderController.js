@@ -17,7 +17,7 @@ exports.addOrder = CatchError(async (req, res, next) => {
         await OrderProduct.create({ orderId: order.id, productId: products[i].id, amount: products[i].amount })
     }
 
-    const transaction = await Transaction.create({ amount, order_id: order.id })
+    const transaction = await Transaction.create({ amount, order_id: order.id, transaction_id: 0 })
 
     const { result, error } = await callMYUZCARD(
         'POST',
