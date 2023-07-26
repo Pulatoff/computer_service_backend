@@ -3,7 +3,7 @@ const AppError = require('./appError')
 const catchAsync = (fn) => {
     const func = (req, res, next) => {
         fn(req, res, next).catch((err) => {
-            console.log(err)
+            console.log(err.response)
             next(new AppError(err.message, 500))
         })
     }

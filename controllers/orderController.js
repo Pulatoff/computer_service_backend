@@ -22,7 +22,7 @@ exports.addOrder = CatchError(async (req, res, next) => {
     const { result, error } = await callMYUZCARD(
         'POST',
         {
-            amount,
+            amount: `${amount}`,
             cardNumber: payment_items.card_number,
             expireDate: payment_items.expire_date,
             extraId: transaction.id,

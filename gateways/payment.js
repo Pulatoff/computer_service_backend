@@ -11,12 +11,13 @@ async function callMYUZCARD(method, body, path) {
         body,
         baseURL: MYUZCARD_URL,
         headers: {
-            Authorization: 'Basic' + new Buffer(MYUZCARD_LOGIN + ':' + MYUZCARD_PASSWORD).toString('base64'),
+            Authorization: 'Basic ' + new Buffer(MYUZCARD_LOGIN + ':' + MYUZCARD_PASSWORD).toString('base64'),
             'Content-Type': 'application/json; charset=utf-8',
             Accept: 'application/json',
             Language: 'uz',
         },
     })
+
     console.log('MYUZCARD response body', response.body)
     return response.body
 }
