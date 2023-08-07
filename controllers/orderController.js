@@ -17,26 +17,7 @@ exports.addOrder = CatchError(async (req, res, next) => {
         await OrderProduct.create({ orderId: order.id, productId: products[i].id, amount: products[i].amount })
     }
 
-    const transaction = await Transaction.create({ amount, order_id: order.id, transaction_id: 0 })
-
-    const { result, error } = await callMYUZCARD(
-        'POST',
-        {
-            amount: `${amount}`,
-            cardNumber: payment_items.card_number,
-            expireDate: payment_items.expire_date,
-            extraId: transaction.id,
-        },
-        '/Payment/paymentWithoutRegistration'
-    )
-
-    if (error) {
-        next(new AppError(error.errorMessage, 400))
-    }
-
-    transaction.transaction_id = result.transactionId
-    transaction.session = result.session
-    await transaction.save()
+    await Transaction.create({ amount, order_id: order.id, transaction_id: 0 })
 
     response(res, '', 201, 'You are successfully order products')
 })

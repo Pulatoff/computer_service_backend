@@ -16,3 +16,30 @@ exports.ConfirmPayment = catchError(async (req, res, next) => {
     }
     response(res, {}, 200, 'success')
 })
+
+exports.PayByCard = catchError(async (req, res, next) => {
+    const { card_number, expire_date, order_id } = req.body
+    const order = await Order.findByPk(order_id, { include: [{ model: Transaction }] })
+    const { result, error } = await callMYUZCARD(
+        'POST',
+        {
+            amount: `${order.amount}`,
+            cardNumber: card_number,
+            expireDate: expire_date,
+            extraId: order.transaction.id,
+        },
+        '/Payment/paymentWithoutRegistration'
+    )
+
+    const transaction = await Transaction.findByPk(order.transaction.id)
+
+    if (error) {
+        next(new AppError(error.errorMessage, 400))
+    }
+
+    transaction.transaction_id = result.transactionId
+    transaction.session = result.session
+    await transaction.save()
+
+    response(res, {}, 200, 'sended to phone sms  otp message')
+})
