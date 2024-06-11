@@ -20,13 +20,18 @@ exports.ConfirmPayment = catchError(async (req, res, next) => {
 exports.PayByCard = catchError(async (req, res, next) => {
     const { card_number, expire_date, order_id } = req.body
     const order = await Order.findByPk(order_id, { include: [{ model: Transaction }] })
+    if (!order) {
+        next(new AppError('Order not found', 400))
+    }
+    console.log(card_number, 'CARD NUMBER')
+    console.log(expire_date, 'EXPIRE_DATE')
     const { result, error } = await callMYUZCARD(
         'POST',
         {
             amount: `${order.amount}`,
             cardNumber: card_number,
             expireDate: expire_date,
-            extraId: order.transaction.id,
+            extraId: order?.transaction?.id,
         },
         '/Payment/paymentWithoutRegistration'
     )

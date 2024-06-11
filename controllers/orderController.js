@@ -19,7 +19,7 @@ exports.addOrder = CatchError(async (req, res, next) => {
 
     await Transaction.create({ amount, order_id: order.id, transaction_id: 0 })
 
-    response(res, '', 201, 'You are successfully order products')
+    response(res, order, 201, 'You are successfully order products')
 })
 
 exports.getAllOrders = CatchError(async (req, res, next) => {
